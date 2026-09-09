@@ -3,11 +3,11 @@
 Documento de decisiones de arquitectura del monorepo. Crece por entrega: cada spec añade la
 sección de lo que instaló, con el fundamento de la decisión y no solo su enunciado.
 
-Esta versión cubre `apps/backend` tal como lo dejó la spec `backend-persistence` —el arranque de
-NestJS, la persistencia Prisma sobre SQLite, el seed explícito del catálogo, los repositorios como
-puertos de dominio y el endpoint `GET /api/products`— más lo que añadió la spec `backend-checkout`:
-`POST /api/checkout/preview`, `POST /api/checkout`, las reglas puras de stock y el puerto de
-confirmación de compra.
+Esta versión cubre el monorepo completo: `packages/shared` con el motor de descuentos,
+`apps/backend` —arranque de NestJS, persistencia Prisma sobre SQLite, seed explícito, repositorios
+como puertos de dominio, `GET /api/products`, `POST /api/checkout/preview`, `POST /api/checkout`,
+las reglas puras de stock y el puerto de confirmación de compra— y `apps/frontend`, con el carrito
+reactivo, el cupón, el desglose, la alerta del tope y la confirmación de la orden.
 
 ---
 
@@ -343,3 +343,96 @@ Cuando los cupones dejen de ser inmutables —una fecha de expiración administr
 usos— la decisión cambia, y cambia en un solo sitio: se declara `CouponRepository` como puerto de
 dominio y su adaptador en infraestructura, exactamente como está hecho para productos. El motor de
 descuentos no se entera, porque recibe el cupón ya resuelto y no sabe de dónde viene.
+
+---
+
+## Por qué el frontend no calcula nada
+
+`apps/frontend` es React con Vite y Zustand. La decisión que lo define no es el stack sino lo que
+**no** hace: no calcula descuentos, no redondea, no compone etiquetas y no deduce si el tope se
+activó. Pide `POST /api/checkout/preview` y pinta los enteros que llegan.
+
+La razón es la que ya justifica la política de redondeo del motor: si el frontend recalculara la
+cascada tendría que reimplementar los micro-centavos, las tasas en puntos básicos y el reparto por
+mayor resto. Dos implementaciones de la misma regla divergen, y el síntoma clásico es el descuadre
+de un centavo entre lo que el usuario vio en pantalla y lo que quedó persistido en la orden. Con
+una sola implementación en `packages/shared` y el frontend limitado a formatear, esa divergencia es
+**estructuralmente imposible**, no una convención que alguien deba recordar.
+
+La única aritmética de dinero que sobrevive en el cliente es el subtotal optimista del carrito:
+
+```ts
+selectCartLines(state).reduce((acc, l) => acc + l.product.priceCents * l.quantity, 0)
+```
+
+Producto de enteros, exacto, sin redondeo y sin punto flotante. Se permite porque no hay ninguna
+fracción que redondear, y existe para que agregar un producto se sienta instantáneo sin esperar al
+servidor. El desglose de descuentos, en cambio, siempre viene del backend.
+
+### El store no guarda precios
+
+`items` es `Record<string, number>`: identificador de producto y cantidad, nada más. El precio, el
+nombre y la categoría se resuelven contra el catálogo en el momento de leer.
+
+Si la línea del carrito llevara su propio `priceCents` habría dos copias del precio —la del catálogo
+y la de la línea— que divergen en cuanto el catálogo se recargue tras una compra. Guardando solo la
+cantidad, el precio tiene una sola fuente y el problema no puede existir.
+
+Por el mismo motivo el subtotal es un **selector derivado** y no un campo del estado: un
+`subtotalCents` almacenado sería un segundo lugar que mantener sincronizado con `items`, y el primer
+bug sería un subtotal viejo tras un `remove`.
+
+### Validación en la frontera de red, no assertions
+
+`Response.json()` devuelve `Promise<any>`, y las reglas de tipado del proyecto prohíben tanto `any`
+como las type assertions. La salida fácil —`(await response.json()) as readonly Product[]`— se
+descartó: una assertion sobre datos que vienen de fuera del proceso no verifica nada, solo silencia
+al compilador exactamente donde hace falta comprobar.
+
+El cuerpo entra como `unknown` —la única conversión que no necesita assertion— y se estrecha con
+predicados de tipo (`isProduct`, `isCatalog`, `isApiError`). La respuesta queda **validada** en el
+borde en lugar de asumida, y `apps/frontend` no contiene una sola assertion.
+
+Es el mismo criterio que `toProduct` aplica en el backend sobre las filas de Prisma: en toda
+frontera donde el dato deja de estar bajo el control del compilador, se comprueba en runtime.
+
+### La alerta del tope se lee, no se deduce
+
+`CapAlert` se renderiza si y solo si `totals.capApplied` es `true`. No compara `totalSavingsCents`
+con `capCents` ni `effectiveDiscountBps` con `3500`, y la diferencia no es estilística: **un
+descuento de exactamente el 35% no dispara la alerta**, porque el tope solo se considera aplicado
+cuando hubo truncamiento real. Las dos derivaciones por comparación no saben distinguir ese caso
+de frontera; el booleano que decide el backend sí.
+
+Por eso la prueba verifica la alerta en las dos direcciones —presente con `capApplied: true`,
+ausente con `capApplied: false` aunque el ahorro sea alto—. El caso negativo es el que impide que
+alguien reintroduzca la derivación por porcentaje sin que nada falle.
+
+### Un desglose obsoleto es peor que ninguno
+
+El desglose se pide cuando cambian las líneas del carrito **o** el cupón aplicado, no solo al pulsar
+"Aplicar". Si solo se recalculara al aplicar el cupón, agregar un producto dejaría en pantalla un
+cálculo que ya no corresponde al carrito, y el usuario decidiría mirando un número falso.
+
+Eso abre una carrera: pulsar `+` dos veces seguidas lanza dos peticiones, y si la primera responde
+después de la segunda, la pantalla se queda con el desglose del carrito anterior. Se resuelve con un
+contador de secuencia que descarta las respuestas que ya no son la más reciente. Son tres líneas.
+
+Se descartaron deliberadamente el *debounce* y la cancelación de peticiones: resuelven un problema
+de volumen que esta aplicación no tiene, y habrían añadido temporizadores y `AbortController` sin un
+caso de uso que los justifique.
+
+### Trade-offs asumidos en el cliente
+
+- **Zustand en lugar de Redux o Context.** El estado es una pantalla con cuatro
+  responsabilidades; Redux traería *actions*, *reducers* y *middleware* para un caso que se resuelve
+  con un store y dos selectores. Context habría forzado a resolver la re-renderización a mano. El
+  precio es que Zustand no impone una disciplina de mutaciones: se compensa con el estado declarado
+  `readonly` y con actualizaciones inmutables.
+- **Un solo store, partido en slices.** El cupón y el desglose dependen del carrito, así que dos
+  stores separados obligarían a sincronizar dos fuentes para una sola pantalla. Se mantuvo un único
+  store y, cuando el archivo superó las 250 líneas, se partió en *slices* (`cart.slice.ts`,
+  `checkout.slice.ts`) que componen el mismo estado.
+- **Sin router.** Es una pantalla. Añadir enrutado sería estructura sin destino.
+- **Sin persistencia del carrito entre recargas.** Recargar vacía el carrito. Es aceptable en el
+  alcance de la prueba y evita decidir una política de expiración que nadie pidió.

@@ -52,7 +52,7 @@ cálculo no cuenta como cubierto.
 
 ### Reparto de autoría
 
-Porcentajes aproximados, medidos a ojo sobre el código entregado hasta ahora. La lectura útil
+Porcentajes aproximados, medidos a ojo sobre el código entregado. La lectura útil
 no es el número sino el patrón: **lo que la IA hace bien es volumen estructurado; lo que hay
 que escribir a mano son las costuras** —tipos que cruzan una frontera, configuración de
 proyectos y decisiones de contrato.
@@ -61,17 +61,30 @@ proyectos y decisiones de contrato.
 |------|-----------------|----------------------------|------------------|
 | Motor de descuentos (`packages/shared`) | ~70% | ~30% | La política de redondeo completa (ver corrección [1]): micro-centavos, tasas en bps, redondeo único, reparto por mayor resto. |
 | API backend (`apps/backend`) | ~80% | ~20% | La costura de tipos del seed (corrección [2]), la topología de los `tsconfig` y la decisión del código de error del `500`. |
-| UI frontend (`apps/frontend`) | — | — | Pendiente: el workspace no está implementado en esta entrega. |
+| UI frontend (`apps/frontend`) | ~85% | ~15% | La costura de tipos de la frontera de red (ver más abajo), la separación entre el cupón que se teclea y el aplicado, y la condición de la alerta del tope, que debe leer `capApplied` y no derivarse de porcentajes. |
 | Tests | ~75% | ~25% | Los fixtures y los valores esperados. La IA genera la estructura de la tabla de casos; el número contra el que se afirma se calcula a mano, porque un valor esperado sugerido por quien escribió la implementación no prueba nada. |
 
-Detalle del backend, que es lo que añade esta entrega: el andamiaje —schema Prisma y migración,
-módulos de Nest, `jest.config.ts`, `eslint.config.mjs`, dobles en memoria— es casi todo generado, y
-ahí la IA rinde. Lo que hubo que rehacer no fue de estilo. La corrección [2] es el caso
-representativo; hubo otras dos del mismo tipo que no se detallan para no alargar el documento: un
-contrato de error sin código para el `500`, que se quiso tapar con una assertion `as ErrorCode` y
-terminó extendiendo `ERROR_CODES` en `packages/shared` (razonada en `docs/arquitectura.md`), y una
-topología de `tsconfig` cuyo `typecheck` no podía pasar nunca, con TS6059 determinista. Las tres se
-sostenían en el razonamiento del asistente, pero no en `tsc`.
+El patrón se repite en las tres áreas: el andamiaje —schema Prisma y migración, módulos de Nest,
+configuración de Jest y de Vite, componentes de React, dobles en memoria— es casi todo generado, y
+ahí la IA rinde. Lo que hubo que rehacer no fue de estilo, sino costuras.
+
+En el backend, la corrección [2] es el caso representativo. Hubo otras dos del mismo tipo que no se
+detallan para no alargar el documento: un contrato de error sin código para el `500`, que se quiso
+tapar con una assertion `as ErrorCode` y terminó extendiendo `ERROR_CODES` en `packages/shared`
+(razonada en `docs/arquitectura.md`), y una topología de `tsconfig` cuyo `typecheck` no podía pasar
+nunca, con TS6059 determinista.
+
+En el frontend hubo una del mismo tipo, en la frontera de red. `Response.json()` devuelve
+`Promise<any>` y las reglas del proyecto prohíben tanto `any` como las assertions, así que el
+borrador resolvía el hueco con `(await response.json()) as readonly Product[]`. Se descartó por el
+mismo criterio que la corrección [2]: una assertion sobre datos que vienen de fuera no verifica
+nada, solo silencia al compilador donde precisamente hace falta comprobar. La versión final recibe
+el cuerpo en una variable declarada `unknown` —la única conversión que no necesita assertion— y lo
+estrecha con predicados de tipo (`isProduct`, `isCatalog`, `isApiError`). El resultado es que la
+respuesta queda **validada** en el borde en lugar de asumida, y el workspace entero no tiene una
+sola assertion.
+
+Las cuatro se sostenían en el razonamiento del asistente, pero no en `tsc`.
 
 ### Correcciones a sugerencias de la IA
 
