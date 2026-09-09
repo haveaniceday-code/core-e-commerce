@@ -71,18 +71,18 @@ export const CartPanel = (): JSX.Element => {
           <thead>
             <tr>
               <th scope="col">Producto</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Total</th>
-              <th scope="col">Acciones</th>
+              <th scope="col" className="num">Cantidad</th>
+              <th scope="col" className="num">Total</th>
+              <th scope="col" className="num">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {lines.map((line) => (
               <tr key={line.product.id}>
                 <th scope="row">{line.product.name}</th>
-                <td>{line.quantity}</td>
-                <td>{formatCents(lineTotalCents(line))}</td>
-                <td>
+                <td className="num">{line.quantity}</td>
+                <td className="num">{formatCents(lineTotalCents(line))}</td>
+                <td className="acciones">
                   {/*
                     Los glifos `+`, `−` y `x` no son nombres accesibles utiles, asi que
                     cada control declara el suyo con `aria-label` incluyendo el producto:
@@ -90,6 +90,7 @@ export const CartPanel = (): JSX.Element => {
                   */}
                   <button
                     type="button"
+                    className="boton--icono"
                     aria-label={`Aumentar cantidad de ${line.product.name}`}
                     onClick={() => {
                       addToCart(line.product.id);
@@ -99,6 +100,7 @@ export const CartPanel = (): JSX.Element => {
                   </button>
                   <button
                     type="button"
+                    className="boton--icono"
                     aria-label={`Disminuir cantidad de ${line.product.name}`}
                     onClick={() => {
                       decrementLine(line.product.id);
@@ -108,6 +110,7 @@ export const CartPanel = (): JSX.Element => {
                   </button>
                   <button
                     type="button"
+                    className="boton--sutil"
                     aria-label={`Quitar ${line.product.name} del carrito`}
                     onClick={() => {
                       removeLine(line.product.id);
@@ -127,8 +130,9 @@ export const CartPanel = (): JSX.Element => {
         sin caso especial (FC-R4.3) y el monto se pinta con el mismo `formatCents`. El
         entero viaja del selector al DOM sin reformatearse por el camino (I6).
       */}
-      <p>
-        Subtotal: <strong data-testid="cart-subtotal">{formatCents(subtotalCents)}</strong>
+      <p className="total">
+        <span>Subtotal</span>
+        <strong data-testid="cart-subtotal">{formatCents(subtotalCents)}</strong>
       </p>
     </section>
   );

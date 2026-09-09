@@ -58,8 +58,8 @@ const Breakdown = ({ totals }: { readonly totals: CheckoutTotals }): JSX.Element
         <tr>
           <th scope="col">Descuento</th>
           <th scope="col">Estado</th>
-          <th scope="col">Tasa</th>
-          <th scope="col">Monto</th>
+          <th scope="col" className="num">Tasa</th>
+          <th scope="col" className="num">Monto</th>
         </tr>
       </thead>
       <tbody>
@@ -67,9 +67,17 @@ const Breakdown = ({ totals }: { readonly totals: CheckoutTotals }): JSX.Element
           <tr key={line.name} data-testid={`breakdown-line-${line.name}`}>
             {/* El texto llega listo del backend; la UI no lo compone (FK-R3.1). */}
             <th scope="row">{line.label}</th>
-            <td>{line.applied ? 'Aplicado' : 'No aplicado'}</td>
-            <td>{formatBps(line.rateBps)}</td>
-            <td>{formatCents(line.discountCents)}</td>
+            <td>
+              {/*
+                La etiqueta de estado es solo color y forma alrededor del mismo texto: la
+                clase cambia con `applied`, nunca el contenido, que es el que se lee.
+              */}
+              <span className={line.applied ? 'estado estado--aplicado' : 'estado'}>
+                {line.applied ? 'Aplicado' : 'No aplicado'}
+              </span>
+            </td>
+            <td className="num">{formatBps(line.rateBps)}</td>
+            <td className="num">{formatCents(line.discountCents)}</td>
           </tr>
         ))}
       </tbody>
@@ -80,18 +88,18 @@ const Breakdown = ({ totals }: { readonly totals: CheckoutTotals }): JSX.Element
       ya viene topado y `finalTotalCents` ya viene derivado por el backend: aqui no se
       suma, no se resta y no se compara con el tope.
     */}
-    <p>
-      Descuento efectivo:{' '}
+    <p className="total">
+      <span>Descuento efectivo</span>
       <strong data-testid="breakdown-effective">
         {formatBps(totals.effectiveDiscountBps)}
       </strong>
     </p>
-    <p>
-      Ahorro total:{' '}
+    <p className="total">
+      <span>Ahorro total</span>
       <strong data-testid="breakdown-savings">{formatCents(totals.totalSavingsCents)}</strong>
     </p>
-    <p>
-      Total a pagar:{' '}
+    <p className="total total--destacado">
+      <span>Total a pagar</span>
       <strong data-testid="breakdown-total">{formatCents(totals.finalTotalCents)}</strong>
     </p>
   </>

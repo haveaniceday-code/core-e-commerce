@@ -34,16 +34,38 @@ export const App = (): JSX.Element => {
   }, []);
 
   return (
-    <main>
-      <h1>Core E-Commerce</h1>
+    <main className="app">
+      <h1 className="app__titulo">Core E-Commerce</h1>
 
-      <CatalogTable />
-      <CartPanel />
-      <CouponInput />
-      <DiscountBreakdown />
-      {/* Se autocensura cuando `capApplied` no es `true`: devuelve `null` y no ocupa sitio. */}
-      <CapAlert />
-      <OrderConfirmationPanel />
+      {/*
+        Los dos `div` son de presentacion y solo de presentacion: la hoja de estilos los
+        usa para poner en columnas lo que sigue siendo una sola secuencia, y por debajo de
+        960px la rejilla colapsa y esa secuencia se lee tal cual.
+
+        El corte va **entre el carrito y el cupon**, y no despues del catalogo. Es la unica
+        particion que hace las dos cosas a la vez: deja a la izquierda lo que se arma —el
+        catalogo y el carrito que se llena desde el— y a la derecha lo que se cobra —cupon,
+        desglose y confirmacion—, y de paso reparte el alto. Con el catalogo solo, la
+        columna izquierda quedaba vacia de la mitad para abajo y las cuatro tarjetas
+        restantes empujaban el boton de comprar al final de la pagina.
+
+        Sigue siendo un corte contiguo de la secuencia original, asi que el orden del DOM
+        no cambia: la lectura secuencial y las pruebas ven exactamente lo mismo.
+      */}
+      <div className="app__rejilla">
+        <div className="app__columna">
+          <CatalogTable />
+          <CartPanel />
+        </div>
+
+        <div className="app__columna">
+          <CouponInput />
+          <DiscountBreakdown />
+          {/* Se autocensura cuando `capApplied` no es `true`: devuelve `null` y no ocupa sitio. */}
+          <CapAlert />
+          <OrderConfirmationPanel />
+        </div>
+      </div>
     </main>
   );
 };

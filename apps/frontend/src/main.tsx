@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './App';
 
+// Hoja de estilos global. Se importa aqui —y no en `App`— porque es infraestructura de
+// arranque, no parte de la composicion: los tests montan `App` sin necesitar el CSS.
+import './styles.css';
+
 /**
  * Punto de montaje. No tiene ramas de negocio y queda excluido de cobertura.
  *

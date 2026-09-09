@@ -39,9 +39,9 @@ export const CatalogTable = (): JSX.Element => {
           <tr>
             <th scope="col">Producto</th>
             <th scope="col">Categoría</th>
-            <th scope="col">Precio</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Acción</th>
+            <th scope="col" className="num">Precio</th>
+            <th scope="col" className="num">Stock</th>
+            <th scope="col" className="num">Acción</th>
           </tr>
         </thead>
         <tbody>
@@ -50,15 +50,16 @@ export const CatalogTable = (): JSX.Element => {
               <th scope="row">{product.name}</th>
               {/* La tilde vive solo en la etiqueta, nunca en el literal (FC-R5.1). */}
               <td>{CATEGORY_LABEL[product.category]}</td>
-              <td>{formatCents(product.priceCents)}</td>
-              <td>{product.stock}</td>
-              <td>
+              <td className="num">{formatCents(product.priceCents)}</td>
+              <td className="num">{product.stock}</td>
+              <td className="acciones">
                 {/*
                   El boton no se deshabilita por stock (D1 / FC-R3.6): superar el
                   disponible es un estado valido del carrito y su rechazo es del backend.
                 */}
                 <button
                   type="button"
+                  className="boton--primario"
                   aria-label={`Agregar ${product.name} al carrito`}
                   onClick={() => {
                     addToCart(product.id);
