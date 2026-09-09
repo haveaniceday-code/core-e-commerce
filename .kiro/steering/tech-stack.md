@@ -13,7 +13,7 @@ acumulativos.
 - **Backend:** NestJS. API REST.
 - **Frontend:** React con Vite.
 - **Estado del frontend:** Zustand.
-- **Base de datos:** PostgreSQL. **Decisión abierta** — ver nota más abajo.
+- **Base de datos:** SQLite en archivo local. Ver la justificación más abajo.
 - **ORM:** Prisma. Se elige por sus tipos generados, que refuerzan el tipado estricto de
   extremo a extremo.
 - **Validación en runtime:** class-validator con `ValidationPipe` global.
@@ -23,16 +23,24 @@ acumulativos.
   framework, así que no necesita el runner de NestJS.
 - **Gestor de paquetes:** npm workspaces.
 
-### Nota sobre la base de datos
+### Por qué SQLite
 
-El enunciado sugiere persistencia "en memoria, SQLite o JSON". PostgreSQL es válido —la
-sección 4.1 es flexible en el stack— pero obliga al evaluador a levantar una base de datos
-para correr el repositorio y añade riesgo a los 7 minutos de demo en vivo.
+Se elige SQLite por dos
+razones:
 
-SQLite con Prisma conserva íntegra la justificación de los tipos generados y hace que el
-proyecto arranque con `npm install && npm run dev`. Si se mantiene PostgreSQL, es
-obligatorio incluir un `docker-compose.yml` y justificar la elección en
-`docs/arquitectura.md`.
+- **Persistencia real y demostrable.** con SQLite se puede
+  reiniciar el backend y mostrar que la orden sigue ahí, cosa que la persistencia en
+  memoria no permite.
+
+- **Conserva el argumento de Prisma.** Los tipos generados por el ORM refuerzan el tipado
+  estricto de extremo a extremo igual que con cualquier otro motor.
+
+Trade-off a documentar en `docs/arquitectura.md`: SQLite no cubre concurrencia de escritura
+seria. Es irrelevante para este MVP, y como el acceso a datos está detrás de las interfaces
+`ProductRepository` y `OrderRepository`, cambiar de motor no toca la lógica de dominio.
+
+El archivo `.db` **no se versiona**: se genera con las migraciones y el seed del catálogo al
+arrancar.
 
 ## Estructura del monorepo
 
