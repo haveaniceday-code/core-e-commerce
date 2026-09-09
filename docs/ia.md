@@ -261,3 +261,32 @@ volvería a construir la línea. El backend no cambia y sigue siendo el que mand
 **Lo que costó.** Invertir R3.6 y D1, y reescribir tres suites. La del `409` es la que enseña
 el cambio: ya no puede nacer de un carrito pasado de stock, así que ahora nace del catálogo
 obsoleto —pide 3, el backend responde que hay 1—, que es el escenario que sobrevive al tope.
+
+#### [4] El desglose mostraba más descuento del que se cobraba
+
+**Cómo apareció.** Probando el tope con un cupón de tasa alta. La alerta salía y el total a pagar
+era correcto, así que parecía que todo estaba bien. Al mirar la tabla, no: las tres líneas sumaban
+`74368` —un 57% del subtotal— y el ahorro del pie era `45465`, el 35%. Cada número estaba bien por
+separado; juntos no cerraban.
+
+**La instrucción que di.** Textual, tal cual la escribí:
+
+> cuando el descuento supera el tope del 35% el valor que se muestra en la ui no corresponde al
+> maximo posible del 35% de descuento, sino que muestra el total aplicado el cual es mayor al 35%
+> por ejemplo el descuento del 50%.
+
+**Lo que no acepté.** La reparación evidente era restar en el componente,
+`rawDiscountCents - totalSavingsCents`, una línea. No la tomé porque el frontend no hace
+aritmética de dinero, y ceder ahí abre un segundo sitio donde se deriva un importe. El problema
+tampoco era de la vista: `CheckoutTotals` traía `capApplied` y el ahorro ya topado, pero no cuánto
+se había recortado, así que la UI no tenía forma de explicarlo sin calcularlo. El contrato estaba
+incompleto.
+
+**Cómo quedó.** `capAdjustmentCents` en el contrato, calculado en `totals-assembler.ts` como el
+resto de los montos. El desglose añade una cuarta fila con ese recorte en negativo, visible solo si
+hubo truncamiento; con ella las cuatro filas suman el ahorro del pie. La condición es `capApplied`,
+la misma que la alerta: un 35% clavado no se truncó y no lleva ajuste.
+
+Añadir un campo requerido rompió once fixtures, y eso fue lo útil: `tsc` los fue señalando uno a
+uno, incluidas la guarda de runtime del cliente de API y las claves exactas del e2e, que ahora
+comprueba que el campo viaja en la respuesta.
