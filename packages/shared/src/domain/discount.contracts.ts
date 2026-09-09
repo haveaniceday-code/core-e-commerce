@@ -38,6 +38,15 @@ export interface CheckoutTotals {
   capApplied: boolean;
   /** Ya topado: min(rawDiscountCents, capCents). */
   totalSavingsCents: number;
+  /**
+   * Lo que el tope recorto: `rawDiscountCents - totalSavingsCents`, y `0` sin truncamiento.
+   *
+   * Viaja calculado desde el backend en lugar de derivarse en la UI por la misma razon que
+   * `capApplied`: el frontend no opera con montos. Sin este campo el desglose no cuadra a la
+   * vista —las tres lineas suman `rawDiscountCents`, pero el ahorro reportado es el topado—,
+   * y la unica forma de explicar la diferencia en pantalla seria restar alli.
+   */
+  capAdjustmentCents: number;
   effectiveDiscountBps: number;
   /** Derivado: originalSubtotalCents - totalSavingsCents. */
   finalTotalCents: number;
