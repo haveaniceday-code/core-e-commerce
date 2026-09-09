@@ -40,6 +40,7 @@ del carrito), generar una suite de tests que:
 
 - Cascada que supera el 35%, con truncamiento exacto en 35%.
 - Frontera del 35%: un caso justo por debajo y otro justo por encima.
+- Frontera del volumen: exactamente 10000 centavos NO activa el 5%, 10001 sí.
 - Carrito vacío, que devuelve descuento cero sin excepción.
 - Carrito con datos corruptos: cantidad negativa, precio inválido, producto inexistente.
 - Cupón no registrado o expirado, que se ignora sin interrumpir el cálculo.
@@ -47,6 +48,14 @@ del carrito), generar una suite de tests que:
 - Stock insuficiente, que rechaza el checkout sin decrementar stock ni persistir la orden.
 - Cascada multiplicativa verificada con montos calculados a mano.
 - Solo categoría, categoría más volumen, y las tres reglas combinadas.
+- Carrito mixto: la regla de categoría opera solo sobre los productos `Tecnologia`.
+- Redondeo: un carrito cuya cascada produzca fracciones de centavo en más de un paso.
+
+**Importante sobre el tope del 35%:** no es alcanzable con las reglas y el catálogo del
+enunciado (el máximo real es 27.325%). Los tests del tope se escriben **inyectando
+estrategias stub** con tasas altas en `DiscountEngine`, no buscando un carrito que lo
+dispare. Escribe además un test que confirme que con los datos reales `capApplied` es
+siempre `false`. Ver `architecture.md` y `testing-standards.md`.
 
 ## Convenciones
 
@@ -62,6 +71,8 @@ Al terminar, reportar:
 
 - Los archivos de test creados.
 - Los casos borde cubiertos.
-- El comando exacto para verificar la cobertura, por ejemplo
-  `npm run test:cov --workspace apps/backend`.
+- El comando exacto para verificar la cobertura, **del workspace donde vive el archivo
+  objetivo**: `npm run test:cov --workspace packages/shared` para el motor de descuentos,
+  `--workspace apps/backend` para servicios y controllers, `--workspace apps/frontend` para
+  el estado del carrito y la UI. El motor NO se mide con el comando del backend.
 - Cualquier camino que no se haya podido cubrir, con la razón técnica.
