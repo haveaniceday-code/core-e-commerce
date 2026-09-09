@@ -8,4 +8,9 @@
  */
 export const PRODUCT_REPOSITORY = 'domain.ProductRepository' as const;
 
-export const ORDER_REPOSITORY = 'domain.OrderRepository' as const;
+/**
+ * Token del puerto de confirmacion de compra (BC-R6.2). Sustituye a
+ * `ORDER_REPOSITORY`, eliminado en esta entrega porque `PurchaseConfirmationPort`
+ * lo subsume: el decremento y la creacion son una sola operacion atomica (BC-R6.5).
+ */
+export const PURCHASE_PORT = 'domain.PurchaseConfirmationPort' as const;

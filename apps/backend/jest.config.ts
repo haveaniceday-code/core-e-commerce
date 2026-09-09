@@ -18,6 +18,12 @@ const config: Config = {
     '<rootDir>/src/infra/prisma/prisma.service.ts', // provider Prisma
     '<rootDir>/src/infra/prisma/prisma-product.repository.ts', // adaptador Prisma
     '\\.spec\\.ts$',
+    // `prisma-purchase.repository.ts` NO se excluye, a proposito (BC-R8.11). La
+    // exclusion estaba condicionada a que el adaptador quedara sin ramas propias una vez
+    // extraida la guarda del compare-and-swap a `verifyStockDecrements`, y no quedo:
+    // la conversion de "sin cupon" a la columna NULL (`order.couponCode ?? null`) es una
+    // rama. Es una frontera de representacion y no una decision de negocio, pero el
+    // criterio del requisito es sintactico y se aplica tal cual: si tiene ramas, se mide.
   ],
   coverageThreshold: { global: { lines: 80, branches: 80 } },
 };
