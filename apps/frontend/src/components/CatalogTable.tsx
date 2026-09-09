@@ -42,6 +42,13 @@ export const CatalogTable = (): JSX.Element => {
       <table aria-labelledby="catalogo-titulo">
         <thead>
           <tr>
+            {/*
+              El `id` va primero, y como columna propia y no
+              embebido en el nombre: es el identificador con el que el desglose del `409` de
+              stock y la orden confirmada nombran cada linea, asi que el usuario tiene que
+              poder cruzarlo con el catalogo que esta viendo.
+            */}
+            <th scope="col">ID</th>
             <th scope="col">Producto</th>
             <th scope="col">Categoría</th>
             <th scope="col" className="num">Precio</th>
@@ -52,6 +59,8 @@ export const CatalogTable = (): JSX.Element => {
         <tbody>
           {catalog.map((product) => (
             <tr key={product.id}>
+              {/* Celda de datos, no encabezado: quien nombra la fila sigue siendo el nombre. */}
+              <td className="id">{product.id}</td>
               <th scope="row">{product.name}</th>
               {/* La tilde vive solo en la etiqueta, nunca en el literal (FC-R5.1). */}
               <td>{CATEGORY_LABEL[product.category]}</td>
