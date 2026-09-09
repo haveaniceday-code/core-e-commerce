@@ -1,6 +1,6 @@
 import { CATEGORY_LABEL, formatCents } from '@core/shared';
 
-import { useCartStore } from '../store/cart.store';
+import { remainingStock, useCartStore } from '../store/cart.store';
 
 /**
  * Catalogo: una fila por producto, con su boton de agregar (FC-R5.1, FC-R5.6).
@@ -10,11 +10,15 @@ import { useCartStore } from '../store/cart.store';
  * composicion— y **no calcula ni redondea montos**: `formatCents` de `@core/shared` es el
  * unico que produce el texto del precio.
  *
- * Se suscribe campo por campo y no al estado completo porque los tres son referencias
- * estables: `catalog` solo cambia de identidad cuando el store hace `set`, y `status` y
- * `errorMessage` son primitivos. El motivo por el que `CartPanel` si necesita el estado
- * completo —`selectCartLines` construye un arreglo nuevo en cada invocacion— no aplica
- * aqui.
+ * Se suscribe campo por campo y no al estado completo porque los cuatro son referencias
+ * estables: `catalog` e `items` solo cambian de identidad cuando el store hace `set`, y
+ * `status` y `errorMessage` son primitivos. El motivo por el que `CartPanel` si necesita el
+ * estado completo —`selectCartLines` construye un arreglo nuevo en cada invocacion— no
+ * aplica aqui.
+ *
+ * `items` se lee **solo** para saber cuanto de cada producto ya esta en el carrito, que es
+ * lo que decide si queda stock por agregar. La comparacion no se escribe aqui: la hace
+ * `remainingStock`, que es la misma que aplica el store.
  */
 
 /** Se invoca unida a su store, nunca desligada (`@typescript-eslint/unbound-method`). */
@@ -24,6 +28,7 @@ const addToCart = (productId: string): void => {
 
 export const CatalogTable = (): JSX.Element => {
   const catalog = useCartStore((state) => state.catalog);
+  const items = useCartStore((state) => state.items);
   const status = useCartStore((state) => state.status);
   const errorMessage = useCartStore((state) => state.errorMessage);
 
@@ -54,12 +59,15 @@ export const CatalogTable = (): JSX.Element => {
               <td className="num">{product.stock}</td>
               <td className="acciones">
                 {/*
-                  El boton no se deshabilita por stock (D1 / FC-R3.6): superar el
-                  disponible es un estado valido del carrito y su rechazo es del backend.
+                  Se deshabilita cuando no queda stock por agregar, contando lo que ya esta
+                  en el carrito: con `stock` 3 y tres unidades dentro, la cuarta no se pide.
+                  El `disabled` es el reflejo de la regla, no la regla: `add` la aplica
+                  igual, y el backend la revalida sobre el stock real.
                 */}
                 <button
                   type="button"
                   className="boton--primario"
+                  disabled={remainingStock(product.stock, items[product.id] ?? 0) === 0}
                   aria-label={`Agregar ${product.name} al carrito`}
                   onClick={() => {
                     addToCart(product.id);

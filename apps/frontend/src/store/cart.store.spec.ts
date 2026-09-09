@@ -5,7 +5,7 @@ import { fetchCatalog } from '../api/catalog.api';
 import { confirmPurchase as requestConfirmation, requestPreview } from '../api/checkout.api';
 import { ApiClientError } from '../api/http';
 
-import { selectCartLines, selectSubtotalCents, useCartStore } from './cart.store';
+import { remainingStock, selectCartLines, selectSubtotalCents, useCartStore } from './cart.store';
 
 import type { CartState } from './cart.store';
 import type {
@@ -585,25 +585,50 @@ describe('selectSubtotalCents (FC-R4.1, FC-R4.2, FC-R4.3)', () => {
   });
 });
 
-describe('superar el stock disponible (FC-R3.6, FC-R6.4, I5)', () => {
-  it('agregar PROD-005 seis veces con stock 3 da cantidad 6 y subtotal 35400', () => {
-    // El carrito no limita por stock a proposito (D1): el rechazo es del backend, y un
-    // tope aqui haria imposible demostrar el 409 en vivo.
-    expect(() => {
-      addTimes(SABANAS, 6);
-    }).not.toThrow();
+describe('el tope del stock disponible (FC-R6.4, I5)', () => {
+  it('agregar PROD-005 seis veces con stock 3 se detiene en 3 y subtotal 17700', () => {
+    // El carrito no deja construir una linea que ya se sabe invalida: `add` se detiene en
+    // el disponible. El backend sigue revalidando sobre el stock real.
+    addTimes(SABANAS, 6);
 
-    expect(items()).toStrictEqual({ [SABANAS]: 6 });
+    expect(items()).toStrictEqual({ [SABANAS]: 3 });
     expect(lines()[0]?.product.stock).toBe(3);
-    // 5900 x 6 = 35400
-    expect(subtotal()).toBe(35400);
+    // 5900 x 3 = 17700
+    expect(subtotal()).toBe(17700);
   });
 
-  it('no marca error ni cambia el status al superar el stock', () => {
+  it('no marca error ni cambia el status al intentar pasarse del stock', () => {
+    // Llegar al tope no es un fallo: es el carrito diciendo que ahi se acaba.
     addTimes(SABANAS, 6);
 
     expect(useCartStore.getState().status).toBe('idle');
     expect(useCartStore.getState().errorMessage).toBeNull();
+  });
+
+  it('el add que no cabe no pide desglose', () => {
+    addTimes(SABANAS, 3);
+    requestPreviewDouble.mockClear();
+
+    useCartStore.getState().add(SABANAS);
+
+    // Una accion que no cambio el carrito no produce peticion, igual que `decrement`
+    // sobre un producto ausente.
+    expect(requestPreviewDouble).not.toHaveBeenCalled();
+  });
+
+  it('un producto que el catalogo no conoce no entra al carrito', () => {
+    useCartStore.getState().add('PROD-999');
+
+    expect(items()).toStrictEqual({});
+  });
+
+  it('remainingStock descuenta lo que ya esta en el carrito y no baja de cero', () => {
+    expect(remainingStock(3, 0)).toBe(3);
+    expect(remainingStock(3, 3)).toBe(0);
+    // Carrito por encima del disponible tras recargar el catalogo: no queda nada, no un
+    // negativo.
+    expect(remainingStock(3, 6)).toBe(0);
+    expect(remainingStock(0, 0)).toBe(0);
   });
 });
 

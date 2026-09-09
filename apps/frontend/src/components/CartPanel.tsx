@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 
 import { formatCents } from '@core/shared';
 
-import { selectCartLines, selectSubtotalCents, useCartStore } from '../store/cart.store';
+import {
+  remainingStock,
+  selectCartLines,
+  selectSubtotalCents,
+  useCartStore,
+} from '../store/cart.store';
 
 import type { CartLine } from '../store/cart.store';
 
@@ -88,9 +93,15 @@ export const CartPanel = (): JSX.Element => {
                     cada control declara el suyo con `aria-label` incluyendo el producto:
                     con varias lineas en pantalla, "Aumentar" a secas seria ambiguo.
                   */}
+                  {/*
+                    El `+` se apaga al llegar al stock disponible, con la misma regla que
+                    el boton "Agregar" del catalogo y que `add`. El `−` y el "Quitar" nunca
+                    se deshabilitan: reducir el carrito siempre es valido.
+                  */}
                   <button
                     type="button"
                     className="boton--icono"
+                    disabled={remainingStock(line.product.stock, line.quantity) === 0}
                     aria-label={`Aumentar cantidad de ${line.product.name}`}
                     onClick={() => {
                       addToCart(line.product.id);

@@ -24,6 +24,22 @@ const INITIAL_ITEMS: Readonly<Record<string, number>> = {};
 const UNEXPECTED = 'Ocurrio un error inesperado al cargar el catalogo.';
 
 /**
+ * Unidades que todavia caben en el carrito: `stock - cantidad ya agregada`, nunca negativo.
+ *
+ * Es **la regla del stock escrita una sola vez**, y las tres partes que la necesitan la
+ * leen de aqui: `add`, que no deja construir una linea invalida; el boton "Agregar" del
+ * catalogo; y el `+` de cada linea del carrito. Escribir `quantity >= stock` en cada uno
+ * de los tres seria la misma comparacion en tres sitios, y el primer bug seria uno de
+ * ellos quedandose atras.
+ *
+ * Se recorta en `0` a proposito. Un carrito puede quedar por encima del disponible sin que
+ * nadie haga nada mal —basta con que el catalogo se recargue con el stock ya decrementado
+ * por otra compra— y en ese caso lo que queda no es un negativo: es que no queda nada.
+ */
+export const remainingStock = (stock: number, quantityInCart: number): number =>
+  Math.max(stock - quantityInCart, 0);
+
+/**
  * Devuelve un mapa nuevo sin la clave dada. `Object.fromEntries` sobre un filtro en vez de
  * `delete` sobre una copia: el estado de Zustand se reemplaza, no se muta.
  */
@@ -64,13 +80,30 @@ export const createCartSlice: CartSliceCreator = (set, get) => ({
    * Producto ausente -> linea con cantidad `1`; producto presente -> incrementa en `1`
    * (FC-R3.3). Al terminar pide el desglose (FK-R2.3).
    *
-   * **No consulta el stock** (FC-R3.6). Superar el disponible es un estado valido del
-   * carrito y su rechazo es responsabilidad del backend; un tope aqui haria imposible
-   * demostrar el `409` en vivo.
+   * **Se detiene en el stock disponible.** Sin unidades libres no hay nada que agregar, y
+   * entonces no toca `items` y **no pide desglose**, por el mismo criterio con el que
+   * `decrement` ignora un producto ausente: una accion que no cambio el carrito no tiene
+   * por que producir una peticion.
+   *
+   * El tope vive aqui y no solo en el `disabled` de los botones. Deshabilitar el control es
+   * lo que el usuario ve, pero no es la regla: un segundo componente que llamara a `add`
+   * volveria a construir la linea invalida. La vista muestra la regla; el store la aplica.
+   *
+   * Esto **no reemplaza la validacion del backend**, que sigue siendo la que manda: el
+   * catalogo del cliente es una copia que envejece, y entre la carga y la compra el stock
+   * puede haber cambiado. Aqui se evita construir un carrito que ya se sabe invalido; alla
+   * se rechaza el que llegue igualmente.
    */
   add: (productId: string): void => {
-    const { items } = get();
+    const { items, catalog } = get();
+    const product = catalog.find((candidate) => candidate.id === productId);
     const current = items[productId] ?? 0;
+
+    // Producto que el catalogo no conoce: sin stock que consultar, no se agrega.
+    if (product === undefined || remainingStock(product.stock, current) === 0) {
+      return;
+    }
+
     set({ items: { ...items, [productId]: current + 1 } });
     void get().refreshPreview();
   },
