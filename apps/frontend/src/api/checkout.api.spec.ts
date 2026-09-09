@@ -138,6 +138,7 @@ const TOTALS: CheckoutTotals = {
   capCents: 45_465,
   capApplied: false,
   totalSavingsCents: 35_495,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 2_732,
   finalTotalCents: 94_405,
 };
@@ -254,6 +255,7 @@ describe('requestPreview: respuesta satisfactoria (FK-R1.1)', () => {
       capCents: 0,
       capApplied: false,
       totalSavingsCents: 0,
+      capAdjustmentCents: 0,
       effectiveDiscountBps: 0,
       finalTotalCents: 0,
     };

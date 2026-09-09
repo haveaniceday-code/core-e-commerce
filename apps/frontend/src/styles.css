@@ -196,6 +196,31 @@ tbody tr:last-child td {
 }
 
 /*
+ * Fila de ajuste por el tope: resta, no suma. Se separa de las tres lineas con un borde
+ * superior y va en cursiva para que se lea como una correccion sobre ellas y no como un
+ * cuarto descuento. Usa el color de logro de la alerta, no el de error: alcanzar el limite
+ * es una buena noticia para el cliente.
+ */
+.ajuste-tope th,
+.ajuste-tope td {
+  border-top: 1px solid var(--borde);
+  font-style: italic;
+  color: var(--texto-tenue);
+}
+
+/*
+ * Identificador del producto: monoespaciado y atenuado. Es un dato de referencia —sirve para
+ * cruzar la fila con el `409` de stock o con el comprobante—, no la forma en que el usuario
+ * reconoce el producto, asi que se lee sin competir con el nombre.
+ */
+.id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--texto-tenue);
+  white-space: nowrap;
+}
+
+/*
  * Columna de acciones: los botones en fila y centrados. El `display: flex` anula el
  * `vertical-align` de la celda, asi que el centrado lo pone `align-items` o los controles
  * quedan arriba en las filas cuyo nombre de producto ocupa dos lineas.

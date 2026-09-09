@@ -29,6 +29,11 @@ export const assembleTotals = (
   // 6. Derivado, nunca por otra via: no puede desincronizarse del desglose.
   const finalTotalCents = originalSubtotalCents - totalSavingsCents;
 
+  // Lo que el tope recorto. Se calcula aqui y no en la UI porque el frontend no opera con
+  // montos: es la resta que hace cuadrar el desglose en pantalla, y su unico dueno es este
+  // ensamblador. Sin truncamiento vale 0, sin necesidad de ramificar.
+  const capAdjustmentCents = rawDiscountCents - totalSavingsCents;
+
   // 7. Sin dividir cuando el subtotal es 0.
   const effectiveDiscountBps =
     originalSubtotalCents === 0
@@ -61,6 +66,7 @@ export const assembleTotals = (
     capCents,
     capApplied,
     totalSavingsCents,
+    capAdjustmentCents,
     effectiveDiscountBps,
     finalTotalCents,
   };

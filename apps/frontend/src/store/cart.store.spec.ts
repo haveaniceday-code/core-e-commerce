@@ -139,6 +139,7 @@ const TOTALS: CheckoutTotals = {
   capCents: 45_465,
   capApplied: false,
   totalSavingsCents: 35_495,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 2_732,
   finalTotalCents: 94_405,
 };
@@ -180,6 +181,7 @@ const TOTALS_TWO_LAPTOPS: CheckoutTotals = {
   capCents: 90_930,
   capApplied: false,
   totalSavingsCents: 70_990,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 2_733,
   finalTotalCents: 188_810,
 };
@@ -212,6 +214,7 @@ const TOTALS_WITHOUT_COUPON: CheckoutTotals = {
   capCents: 45_465,
   capApplied: false,
   totalSavingsCents: 18_836,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 1_450,
   finalTotalCents: 111_064,
 };

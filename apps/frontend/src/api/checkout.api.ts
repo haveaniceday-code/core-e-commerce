@@ -97,6 +97,7 @@ const isCheckoutTotals = (value: unknown): value is CheckoutTotals =>
   typeof value.capCents === 'number' &&
   typeof value.capApplied === 'boolean' &&
   typeof value.totalSavingsCents === 'number' &&
+  typeof value.capAdjustmentCents === 'number' &&
   typeof value.effectiveDiscountBps === 'number' &&
   typeof value.finalTotalCents === 'number';
 

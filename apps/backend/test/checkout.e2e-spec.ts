@@ -239,6 +239,7 @@ const CHECKOUT_TOTALS_KEYS = [
   'capCents',
   'capApplied',
   'totalSavingsCents',
+  'capAdjustmentCents',
   'effectiveDiscountBps',
   'finalTotalCents',
 ] as const;
@@ -263,6 +264,7 @@ const readCheckoutTotals = (value: unknown): CheckoutTotals => {
     capCents: readInt(value.capCents, 'capCents'),
     capApplied: readBoolean(value.capApplied, 'capApplied'),
     totalSavingsCents: readInt(value.totalSavingsCents, 'totalSavingsCents'),
+    capAdjustmentCents: readInt(value.capAdjustmentCents, 'capAdjustmentCents'),
     effectiveDiscountBps: readInt(value.effectiveDiscountBps, 'effectiveDiscountBps'),
     finalTotalCents: readInt(value.finalTotalCents, 'finalTotalCents'),
   };
@@ -424,6 +426,8 @@ describe('POST /api/checkout/preview responde 200 con CheckoutTotals (BC-R8.10)'
       capCents: 45465,
       capApplied: false,
       totalSavingsCents: 35495,
+      // Sin truncamiento el ajuste del tope es 0.
+      capAdjustmentCents: 0,
       effectiveDiscountBps: 2732,
       finalTotalCents: 94405,
     });
@@ -518,6 +522,8 @@ describe('POST /api/checkout responde 201 con OrderConfirmation (BC-R8.10)', () 
       capCents: 45465,
       capApplied: false,
       totalSavingsCents: 18836,
+      // Sin truncamiento el ajuste del tope es 0.
+      capAdjustmentCents: 0,
       effectiveDiscountBps: 1450,
       finalTotalCents: 111064,
     });
