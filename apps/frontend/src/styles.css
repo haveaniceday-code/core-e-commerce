@@ -1,0 +1,404 @@
+/*
+ * Hoja de estilos unica de la Pantalla_Carrito.
+ *
+ * Un solo archivo, CSS plano y sin dependencias nuevas: la app ya tiene su HTML
+ * semantico resuelto —secciones con `aria-labelledby`, tablas con `<th scope>`, roles
+ * `status` y `alert`—, asi que aqui no se inventa estructura. Se estiliza lo que ya
+ * existe: `section` es una tarjeta, `table` es una tabla legible y `button` es un boton.
+ *
+ * Las clases se reservan para lo que el selector de elemento no distingue: la variante
+ * de un boton, el estado de una linea del desglose y el enfasis del total a pagar. Nada
+ * de utilidades sueltas ni de nombres que dupliquen la semantica que el marcado ya lleva.
+ *
+ * El color vive en variables y se redefine entero bajo `prefers-color-scheme: dark`: un
+ * unico bloque cambia el tema y ninguna regla de abajo repite un color literal.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --fondo: #f4f5f7;
+  --superficie: #ffffff;
+  --borde: #e3e5ea;
+  --texto: #1c1f26;
+  --texto-tenue: #61687a;
+
+  --acento: #3a5bd9;
+  --acento-fuerte: #2c47ad;
+  --acento-suave: #eef1fd;
+  /* Color del texto que va *encima* del acento: cambia con el tema, el acento no basta. */
+  --sobre-acento: #ffffff;
+
+  --exito: #1c7a4d;
+  --exito-suave: #e6f5ed;
+  --peligro: #b3261e;
+  --peligro-suave: #fdeceb;
+
+  --radio: 10px;
+  --sombra: 0 1px 2px rgb(16 24 40 / 6%), 0 6px 16px rgb(16 24 40 / 6%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #14161b;
+    --superficie: #1c1f26;
+    --borde: #2c313b;
+    --texto: #e8eaf0;
+    --texto-tenue: #9aa2b4;
+
+    --acento: #8ea4ff;
+    --acento-fuerte: #a9b9ff;
+    --acento-suave: #232941;
+    /* En oscuro el acento es claro, asi que encima va el fondo, no el blanco. */
+    --sobre-acento: #14161b;
+
+    --exito: #6ed0a0;
+    --exito-suave: #1b2f26;
+    --peligro: #ff9c93;
+    --peligro-suave: #33201f;
+
+    --sombra: 0 1px 2px rgb(0 0 0 / 30%), 0 6px 16px rgb(0 0 0 / 25%);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------- Estructura */
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.app__titulo {
+  margin: 0 0 24px;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+/*
+ * Dos columnas a partir de 960px: el catalogo a la izquierda —es la tabla ancha— y la
+ * secuencia carrito -> cupon -> desglose -> compra a la derecha, que es el orden en que
+ * se usan. Por debajo de ese ancho la rejilla colapsa a una sola columna y el orden del
+ * DOM, que ya es el correcto, se lee tal cual.
+ */
+.app__rejilla {
+  display: grid;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .app__rejilla {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+}
+
+.app__columna {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ Tarjetas */
+
+section {
+  /*
+   * El desplazamiento horizontal vive en la tarjeta y no en la `<table>`: `display:
+   * block` sobre una tabla la saca de su contexto de formato y le rompe el `width: 100%`.
+   * En pantallas angostas la tabla se desplaza dentro de su tarjeta y la pagina no.
+   */
+  overflow-x: auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+}
+
+section > h2 {
+  margin: 0 0 14px;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-tenue);
+}
+
+section > p {
+  margin: 10px 0 0;
+}
+
+section > p:first-of-type {
+  margin-top: 0;
+}
+
+/* -------------------------------------------------------------------- Tablas */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  padding: 0 10px 8px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-tenue);
+  border-bottom: 1px solid var(--borde);
+  white-space: nowrap;
+}
+
+tbody th,
+tbody td {
+  padding: 10px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: middle;
+}
+
+tbody th[scope='row'] {
+  font-weight: 550;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Numeros y montos alineados a la derecha para que las columnas se comparen de un vistazo. */
+.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/*
+ * Columna de acciones: los botones en fila y centrados. El `display: flex` anula el
+ * `vertical-align` de la celda, asi que el centrado lo pone `align-items` o los controles
+ * quedan arriba en las filas cuyo nombre de producto ocupa dos lineas.
+ */
+.acciones {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------------- Botones */
+
+button {
+  font: inherit;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* El boton de confirmar es el unico hijo directo de una tarjeta: se separa de lo que sigue. */
+section > button {
+  margin-bottom: 4px;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.boton--primario {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--sobre-acento);
+}
+
+.boton--primario:hover:not(:disabled) {
+  background: var(--acento-fuerte);
+  border-color: var(--acento-fuerte);
+  color: var(--sobre-acento);
+}
+
+/* Controles de cantidad: cuadrados, del mismo alto que el resto de la fila. */
+.boton--icono {
+  width: 30px;
+  padding: 0;
+  height: 30px;
+  line-height: 1;
+  font-size: 1rem;
+}
+
+.boton--sutil {
+  padding: 6px 10px;
+  color: var(--texto-tenue);
+}
+
+.boton--sutil:hover:not(:disabled) {
+  border-color: var(--peligro);
+  color: var(--peligro);
+}
+
+/* -------------------------------------------------------------------- Cupon */
+
+.cupon__campo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.cupon__campo label {
+  flex-basis: 100%;
+  font-size: 0.85rem;
+  color: var(--texto-tenue);
+}
+
+.cupon__campo input {
+  flex: 1 1 160px;
+  min-width: 0;
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 7px;
+  background: var(--fondo);
+  color: var(--texto);
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------- Estados, totales y avisos */
+
+/* Aplicado / No aplicado: la etiqueta de estado del desglose. */
+.estado {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--fondo);
+  color: var(--texto-tenue);
+}
+
+.estado--aplicado {
+  background: var(--exito-suave);
+  color: var(--exito);
+}
+
+/* Linea de total: etiqueta a la izquierda, monto a la derecha. */
+.total {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 8px 0;
+  color: var(--texto-tenue);
+  border-top: 1px solid var(--borde);
+}
+
+.total:first-of-type {
+  margin-top: 4px;
+}
+
+.total strong {
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+
+/* El importe que el usuario va a pagar, destacado sobre los demas. */
+.total--destacado {
+  padding-top: 10px;
+  font-size: 1.05rem;
+  color: var(--texto);
+}
+
+.total--destacado strong {
+  color: var(--acento);
+  font-size: 1.15rem;
+}
+
+/* Datos del comprobante: pares etiqueta/valor, mismo patron que los totales sin borde. */
+.dato {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 6px;
+  color: var(--texto-tenue);
+}
+
+.dato strong,
+.dato time {
+  color: var(--texto);
+  font-weight: 550;
+}
+
+/* La alerta del tope: persistente y por tanto discreta, no un bloque de error. */
+p.alerta-tope {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--exito);
+  border-radius: var(--radio);
+  background: var(--exito-suave);
+  color: var(--exito);
+}
+
+/* Fallos de red y rechazos del backend. */
+[role='alert'] {
+  color: var(--peligro);
+}
+
+.aviso-error {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--peligro);
+  border-radius: var(--radio);
+  background: var(--peligro-suave);
+}
+
+.aviso-error > p {
+  margin: 0;
+}
+
+.aviso-error ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+/* Cargando catalogo, recalculando, confirmando: informativos, nunca alarmantes. */
+[role='status'] {
+  color: var(--texto-tenue);
+  font-size: 0.9rem;
+}

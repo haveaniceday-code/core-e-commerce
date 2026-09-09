@@ -191,17 +191,94 @@ el desglose sea auditable y los tests puedan afirmar sobre el cálculo sin redon
 campos `*Cents` son el resultado de la política de redondeo y son los que la UI muestra. El
 frontend nunca opera aritméticamente con los micros: solo los usa quien testea.
 
+### Petición de checkout y confirmación de la orden
+
+El mismo cuerpo sirve a `preview` y a `checkout`. El cliente declara **qué** quiere comprar
+y con qué cupón, nunca montos: no hay campo de subtotal, descuento ni total, y esa ausencia
+es lo que hace estructuralmente cierto que el backend sea la única fuente de verdad del
+cálculo.
+
+```ts
+interface CheckoutRequest {
+  readonly items: readonly CartItem[];
+  readonly couponCode?: string;   // ausente = sin cupón (exactOptionalPropertyTypes)
+}
+```
+
+La respuesta de `POST /api/checkout` es un contrato propio, porque un cálculo y un hecho
+persistido no son el mismo tipo:
+
+```ts
+interface OrderConfirmationItem {
+  readonly productId: string;
+  readonly name: string;            // del catálogo leído; la fila OrderItem no lo almacena
+  readonly category: ProductCategory;  // literal sin tilde; la tilde vive en CATEGORY_LABEL
+  readonly quantity: number;        // entero positivo
+  readonly unitPriceCents: number;  // de la orden persistida: el monto efectivamente cobrado
+  readonly lineTotalCents: number;  // unitPriceCents × quantity, producto de enteros
+}
+
+interface OrderConfirmation {
+  readonly orderId: string;
+  readonly createdAt: string;       // ISO-8601, nunca Date: es lo que cruza el cable
+  readonly couponCode?: string;     // ausente = sin cupón; ni undefined ni el null de Prisma
+  readonly items: readonly OrderConfirmationItem[];
+  readonly totals: CheckoutTotals;  // embebido, no aplanado
+}
+```
+
+Tres decisiones del contrato que no son estéticas:
+
+- `totals` **embebe** `CheckoutTotals` en lugar de aplanarlo. Una sola declaración de la
+  forma del desglose sirve a `preview` y a `checkout`, y el componente de desglose del
+  frontend vale para ambos sin ramas.
+- El campo de líneas se llama `items` y no `lines`, porque `CheckoutTotals.lines` ya son las
+  `DiscountLine[]` del desglose. Dos `lines` con significados distintos en la misma
+  respuesta sería una confusión garantizada.
+- `createdAt` es cadena ISO-8601 y `couponCode` es opcional **ausente**. El contrato
+  describe lo que queda tras `JSON.stringify`, no el tipo que devuelve el ORM ni el `null`
+  de la columna; traducir entre ambos es responsabilidad del mapeo.
+
+Los precios unitarios se congelan en la orden persistida a propósito: la orden sigue siendo
+auditable si el precio del catálogo cambia después.
+
+La forma de los detalles del `409` por stock también es un tipo compartido, para que quien
+produce el error y quien lo renderiza lean la misma estructura sin redeclararla:
+
+```ts
+interface StockShortage {
+  readonly productId: string;
+  readonly requested: number;
+  readonly available: number;
+}
+```
+
+Los cuatro contratos —`CheckoutRequest`, `OrderConfirmationItem`, `OrderConfirmation` y
+`StockShortage`— viven en `packages/shared` junto a `CheckoutTotals` y se importan en ambos
+lados. El DTO decorado con class-validator del backend declara
+`implements CheckoutRequest`, de modo que `tsc` verifica en compilación que la clase
+validada no se separe del contrato que el frontend consume.
+
 ### Endpoints
 
-| método | ruta | propósito |
-|--------|------|-----------|
-| `GET` | `/api/products` | Catálogo con stock actual (Gestión del Carrito) |
-| `POST` | `/api/checkout/preview` | Calcula `CheckoutTotals`. No valida stock, no persiste, no decrementa (Aplicación Dinámica de Cupón y Visualización de Desglose) |
-| `POST` | `/api/checkout` | Valida stock, recalcula, decrementa stock, persiste la orden (Procesamiento Consistente de la Orden) |
+| método | ruta | estado | cuerpo de respuesta | propósito |
+|--------|------|--------|---------------------|-----------|
+| `GET` | `/api/products` | `200` | `Product[]` | Catálogo con stock actual (Gestión del Carrito) |
+| `POST` | `/api/checkout/preview` | `200` | `CheckoutTotals` | Calcula el desglose. No valida stock, no persiste, no decrementa (Aplicación Dinámica de Cupón y Visualización de Desglose) |
+| `POST` | `/api/checkout` | `201` | `OrderConfirmation` | Valida stock, recalcula, decrementa stock, persiste la orden (Procesamiento Consistente de la Orden) |
+
+Ambos endpoints de checkout reciben `CheckoutRequest` como cuerpo. El `200` de `preview` se
+declara de forma explícita, porque el valor por defecto de Nest para un `@Post()` es `201`:
+`preview` no crea nada, así que devolver `201` sería mentir sobre el efecto de la llamada.
+El `201` de `checkout` sí es correcto, y ahí el recurso creado es la orden.
 
 `preview` existe para que el frontend muestre el desglose en vivo sin efectos secundarios,
 manteniendo el backend como única fuente de verdad del cálculo. El frontend **nunca**
 calcula descuentos por su cuenta.
+
+`checkout` recalcula con el mismo motor sobre el catálogo persistido y no lee ningún monto
+del cliente: un mismo carrito y un mismo cupón producen montos idénticos en centavos en
+ambos endpoints.
 
 ### Forma de error
 
@@ -213,10 +290,33 @@ interface ApiError {
 type ErrorCode =
   | 'INSUFFICIENT_STOCK'   // 409
   | 'PRODUCT_NOT_FOUND'    // 404
-  | 'INVALID_CART';        // 400
+  | 'INVALID_CART'         // 400
+  | 'INTERNAL_ERROR';      // 500, extensión de infraestructura
 ```
 
 Un cupón desconocido o expirado **no** es un error: se ignora (ver arriba).
+
+#### Los dos `409` de stock
+
+`INSUFFICIENT_STOCK` se emite desde dos puntos distintos de `POST /api/checkout`, con el
+mismo código y **detalles distintos**. Que difieran es correcto: describen situaciones
+distintas y el usuario reacciona distinto ante cada una.
+
+| origen | mensaje | detalles | significado |
+|--------|---------|----------|-------------|
+| Validación contra el snapshot del catálogo | `Alguna linea del carrito supera el stock disponible.` | `shortages: StockShortage[]` | "pediste 5 y hay 3" — el usuario corrige el carrito |
+| Guarda del decremento condicional | `El stock cambio mientras se confirmaba la compra.` | `contendedProductIds: string[]` | "alguien se llevó las unidades mientras comprabas" — reintentar |
+
+La validación agrega las cantidades por producto y reporta **todas** las líneas
+deficitarias, no solo la primera, en orden ascendente por `productId` para que la respuesta
+sea determinista. Rechaza únicamente cuando la cantidad supera **estrictamente** el stock:
+una cantidad igual al disponible se trata como satisfecha.
+
+La guarda del decremento no puede reportar `StockShortage[]`: el compare-and-swap sabe que
+la fila ya no cumplía la condición, pero no cuánto stock quedaba, y releerlo daría un valor
+igual de obsoleto. Por eso sus detalles son solo los identificadores en disputa.
+
+En ambos casos el `409` deja el stock sin modificar y no persiste orden ni línea de orden.
 
 ## Alerta del tope
 

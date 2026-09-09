@@ -1,0 +1,20 @@
+{
+  // Proyecto por defecto = proyecto de VERIFICACION. Cubre todo lo que se typecheckea
+  // y se lintea: `src/`, los dobles y specs de `test/`, el script `prisma/seed.ts` y
+  // `jest.config.ts`. Por eso `rootDir` es la raiz del workspace y no `./src`: los specs
+  // de `src/` importan dobles de `test/`, y un `rootDir: ./src` los declara fuera del
+  // programa (TS6059) tanto en el comando como en el editor.
+  //
+  // No emite. La emision es responsabilidad exclusiva de `tsconfig.build.json`, que
+  // estrecha `rootDir` a `./src` y excluye specs y `test/`.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": ".",
+    "outDir": "./dist",
+    "noEmit": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "prisma/**/*.ts", "jest.config.ts"]
+}
