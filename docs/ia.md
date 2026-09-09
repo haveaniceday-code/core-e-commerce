@@ -1,7 +1,7 @@
 # Gobernanza de IA y Bitácora de Co-creación
 
-Registra cómo se usaron asistentes de IA
-en este proyecto y el criterio de ingenieria del desarrollador.
+Registra cómo se usaron asistentes de IA en este proyecto y el criterio de ingeniería del
+desarrollador.
 
 Herramienta principal: Claude Code, gobernada mediante archivos de steering en `.kiro/`
 (reglas siempre activas), una skill y un agente auditor.
@@ -46,16 +46,32 @@ Rechaza por caso borde faltante aunque el porcentaje global pase, y señala la c
 inflada: un archivo con el 90% de líneas ejecutadas pero sin asserts sobre el resultado del
 cálculo no cuenta como cubierto.
 
-
 ---
 
 ## 3. Bitácora de co-creación
 
 ### Reparto de autoría
 
-> **Pendiente.** Porcentaje aproximado de código sugerido por IA frente a lógica crítica
-> escrita a mano, desglosado por área (motor, API, UI, tests). Se completa con el código ya
-> implementado.
+Porcentajes aproximados, medidos a ojo sobre el código entregado hasta ahora. La lectura útil
+no es el número sino el patrón: **lo que la IA hace bien es volumen estructurado; lo que hay
+que escribir a mano son las costuras** —tipos que cruzan una frontera, configuración de
+proyectos y decisiones de contrato.
+
+| área | sugerido por IA | escrito o reescrito a mano | qué quedó a mano |
+|------|-----------------|----------------------------|------------------|
+| Motor de descuentos (`packages/shared`) | ~70% | ~30% | La política de redondeo completa (ver corrección [1]): micro-centavos, tasas en bps, redondeo único, reparto por mayor resto. |
+| API backend (`apps/backend`) | ~80% | ~20% | La costura de tipos del seed (corrección [2]), la topología de los `tsconfig` y la decisión del código de error del `500`. |
+| UI frontend (`apps/frontend`) | — | — | Pendiente: el workspace no está implementado en esta entrega. |
+| Tests | ~75% | ~25% | Los fixtures y los valores esperados. La IA genera la estructura de la tabla de casos; el número contra el que se afirma se calcula a mano, porque un valor esperado sugerido por quien escribió la implementación no prueba nada. |
+
+Detalle del backend, que es lo que añade esta entrega: el andamiaje —schema Prisma y migración,
+módulos de Nest, `jest.config.ts`, `eslint.config.mjs`, dobles en memoria— es casi todo generado, y
+ahí la IA rinde. Lo que hubo que rehacer no fue de estilo. La corrección [2] es el caso
+representativo; hubo otras dos del mismo tipo que no se detallan para no alargar el documento: un
+contrato de error sin código para el `500`, que se quiso tapar con una assertion `as ErrorCode` y
+terminó extendiendo `ERROR_CODES` en `packages/shared` (razonada en `docs/arquitectura.md`), y una
+topología de `tsconfig` cuyo `typecheck` no podía pasar nunca, con TS6059 determinista. Las tres se
+sostenían en el razonamiento del asistente, pero no en `tsc`.
 
 ### Correcciones a sugerencias de la IA
 
@@ -142,3 +158,57 @@ redondear— y obligó a propagar la corrección a cinco archivos de steering. A
 test de regresión construido a propósito para fallar si alguien reintroduce el redondeo por
 paso.
 
+#### [2] Una firma tipada contra Prisma que ningún doble de prueba podía satisfacer
+
+- **Contexto:** `apps/backend/prisma/seed.ts` y su prueba de idempotencia
+  `apps/backend/test/seed.spec.ts` (BP-R3.2, BP-R6.1).
+
+- **Sugerencia de la IA:** el seed recibe el cliente por parámetro —la costura correcta, porque
+  permite probar la idempotencia sin levantar SQLite— pero tipado contra Prisma:
+
+  ```ts
+  export const seedProducts = async (
+    client: Pick<PrismaClient, 'product'>,
+    products: readonly Product[] = CATALOG_PRODUCTS,
+  ): Promise<number> => { /* ... */ };
+  ```
+
+- **Por qué se rechazó:** `Pick` no reduce nada aquí. Selecciona la propiedad `product`, y esa
+  propiedad **es** el delegado completo de Prisma: `findMany`, `findUnique`, `aggregate`,
+  `groupBy`, `createMany`, `fields`, todas con firmas genéricas que devuelven tipos internos del
+  cliente generado (`$Result`, `Prisma__ProductClient`). El seed emite una sola operación, un
+  `upsert`, pero el tipo exige las treinta.
+
+  El almacén doble de la prueba tendría que implementar ese delegado entero para satisfacer el
+  tipo, lo que solo es posible con `any` o con una type assertion, ambas prohibidas. La firma
+  anulaba el propósito de su propia costura: existía para poder probar sin base de datos y estaba
+  tipada de forma que solo la base de datos podía atravesarla.
+
+- **Qué se hizo en su lugar:** se invirtió la dirección de la dependencia de tipos. En vez de que
+  el seed dependa del tipo de Prisma, declara la interfaz estructural mínima que necesita, y el
+  `PrismaClient` real la satisface por estructura:
+
+  ```ts
+  export interface ProductUpsertClient {
+    readonly product: {
+      upsert(args: ProductUpsertArgs): Promise<unknown>;
+    };
+  }
+  ```
+
+  La verificación no se pierde, se mueve: `tsc` comprueba en el sitio de llamada de `main` que el
+  `PrismaClient` concreto encaja en `ProductUpsertClient`, así que un cambio incompatible en el
+  cliente generado sigue rompiendo la compilación. El doble de prueba queda tipado sin un solo
+  `any`. Es la regla del proyecto aplicada a un caso nuevo: el consumidor define la interfaz.
+
+  Al ejecutar la prueba apareció un segundo problema en el mismo archivo: `void main()` estaba en el
+  nivel superior, así que importar `seedProducts` desde el spec ejecutaba `main`, abría una conexión
+  real contra la base y dejaba `process.exitCode = 1`. Jest salía con código distinto de `0` con
+  todos los tests en verde, que es la peor forma de romper un pipeline porque el síntoma no apunta a
+  la causa. Se corrigió con la guarda de punto de entrada:
+
+  ```ts
+  if (require.main === module) {
+    void main().catch((error: unknown) => { /* stderr + exitCode 1 */ });
+  }
+  ```

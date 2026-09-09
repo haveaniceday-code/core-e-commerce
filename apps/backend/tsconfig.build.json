@@ -1,0 +1,12 @@
+{
+  // Proyecto de EMISION: el unico que escribe `dist/`. Estrecha el programa a `src/`
+  // (por eso redeclara `include`, en lugar de heredar `test/` y `prisma/`) y deja fuera
+  // los specs, que no se despliegan.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "noEmit": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "test"]
+}

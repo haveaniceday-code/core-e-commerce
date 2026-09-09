@@ -1,0 +1,578 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Añadir `'INTERNAL_ERROR'` a `ERROR_CODES` en `packages/shared/src/domain/errors.ts`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314516
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950322281
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950438629
+      }
+    ],
+    "1.2 Actualizar `packages/shared/src/domain/contracts.spec.ts` para los cuatro códigos": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314547
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950856105
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951025647
+      }
+    ],
+    "2.1 Crear la configuración base del workspace": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314590
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950325339
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950845728
+      }
+    ],
+    "2.2 Crear `apps/backend/jest.config.ts` con el umbral que rompe el comando": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314613
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950328509
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950849519
+      }
+    ],
+    "3.1 Escribir `apps/backend/prisma/schema.prisma`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314640
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950331621
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950852538
+      }
+    ],
+    "3.2 Generar y versionar la migración inicial": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314673
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950860586
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951029000
+      }
+    ],
+    "3.3 Implementar `apps/backend/prisma/seed.ts`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314696
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951044243
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951307518
+      }
+    ],
+    "3.4 Prueba de idempotencia de `seedProducts` (`test/seed.spec.ts`)": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314722
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951326829
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951636815
+      }
+    ],
+    "4.1 Declarar tokens e interfaces de repositorio": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314744
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950863744
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951032492
+      }
+    ],
+    "4.2 Implementar el mapeo runtime de fila a `Product` y su error tipado": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314772
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950866823
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951036219
+      }
+    ],
+    "4.3 Implementar el orden determinista del catálogo": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314794
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950870006
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951040628
+      }
+    ],
+    "4.4 Pruebas por ejemplo del dominio": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314828
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951047419
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951311045
+      }
+    ],
+    "5.1 Crear los dobles en memoria": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314855
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951050792
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951314452
+      }
+    ],
+    "6.1 Implementar `CatalogService`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314872
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951054135
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951318153
+      }
+    ],
+    "6.2 Pruebas unitarias de `CatalogService`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314895
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951330207
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951640173
+      }
+    ],
+    "6.3 Implementar `ProductsController`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314915
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951333560
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951643240
+      }
+    ],
+    "6.4 Pruebas unitarias de `ProductsController`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314939
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951649974
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951781976
+      }
+    ],
+    "6.5 Implementar `ApiExceptionFilter`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314964
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951057301
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951321372
+      }
+    ],
+    "6.6 Pruebas unitarias de `ApiExceptionFilter`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950314988
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951336807
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951646355
+      }
+    ],
+    "7. Checkpoint - Dominio, aplicación y HTTP verificados": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315011
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951798210
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951976518
+      }
+    ],
+    "8.1 Implementar `PrismaService` y `PrismaModule`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315032
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951653363
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951785308
+      }
+    ],
+    "8.2 Implementar `PrismaProductRepository`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315059
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951979847
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952045520
+      }
+    ],
+    "8.3 Cablear los módulos": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315081
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952048727
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952121522
+      }
+    ],
+    "8.4 Implementar `resolvePort` y el bootstrap": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315114
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952125490
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952479393
+      }
+    ],
+    "8.5 Pruebas por ejemplo de `resolvePort` (`src/port.spec.ts`)": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315145
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952486186
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952554384
+      }
+    ],
+    "9.1 Escribir `test/products.e2e-spec.ts` con supertest": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315174
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952128832
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952482703
+      }
+    ],
+    "10.1 Escribir `apps/backend/README.md`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315197
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952558449
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952779110
+      }
+    ],
+    "10.2 Documentar en `docs/arquitectura.md`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315221
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952562094
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952782414
+      }
+    ],
+    "10.3 Registrar la entrada de bitácora en `docs/ia.md`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315245
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952565771
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952785979
+      }
+    ],
+    "11. Checkpoint final - Umbral de cobertura y scripts de la raíz": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950315264
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952789804
+      },
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788953019416
+      }
+    ],
+    "2. Andamiaje del workspace `apps/backend`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788950849545
+      }
+    ],
+    "1. Extender el contrato de error compartido con `INTERNAL_ERROR`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951025676
+      }
+    ],
+    "4. Capa de dominio pura": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951311084
+      }
+    ],
+    "5. Dobles de prueba tipados": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951314483
+      }
+    ],
+    "3. Schema Prisma, migración inicial y seed explícito": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951636845
+      }
+    ],
+    "6. Caso de uso y capa HTTP": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788951782017
+      }
+    ],
+    "9. Prueba end-to-end de `GET /api/products`": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952482765
+      }
+    ],
+    "8. Infraestructura Prisma, wiring y bootstrap": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952554439
+      }
+    ],
+    "10. Documentación de la entrega": [
+      {
+        "executionId": "e1ceb4b9-cdb3-48fc-9c7f-1a2eb586d70e",
+        "chatSessionId": "sess_059c5146-f586-4075-ae2d-04bd7a99be19",
+        "timestamp": 1788952786005
+      }
+    ]
+  }
+}

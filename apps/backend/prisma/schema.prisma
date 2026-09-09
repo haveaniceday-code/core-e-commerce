@@ -1,0 +1,53 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Espejo persistido del contrato `Product` de @core/shared.
+/// `category` es String y no un enum de Prisma: el enum no está soportado en SQLite,
+/// y el estrechamiento a ProductCategory se hace en runtime en `toProduct` (BP-R4.5).
+model Product {
+  id         String @id
+  name       String
+  category   String
+  priceCents Int
+  stock      Int
+
+  orderItems OrderItem[]
+}
+
+/// Declarado para la parte 2. Sin adaptador en esta entrega (D1 / BP-R2.3).
+/// Todos los montos en centavos enteros; nunca Float, nunca Decimal.
+model Order {
+  id                    String   @id @default(uuid())
+  originalSubtotalCents Int
+  totalSavingsCents     Int
+  finalTotalCents       Int
+  capApplied            Boolean
+  couponCode            String?
+  createdAt             DateTime @default(now())
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id             String @id @default(uuid())
+  orderId        String
+  productId      String
+  quantity       Int
+  unitPriceCents Int
+  lineTotalCents Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// Sin modelo Coupon: los cupones se resuelven en memoria desde @core/shared (D3 / BP-R2.4).
