@@ -367,6 +367,16 @@ const cellsOf = (table: HTMLElement, productName: string): readonly string[] =>
     .getAllByRole('cell')
     .map((cell) => cell.textContent ?? '');
 
+/**
+ * Indices de las celdas de datos del catalogo, con nombre y no como literales dispersos.
+ *
+ * El nombre no aparece: es el `rowheader` con el que `cellsOf` localiza la fila, no una
+ * celda de datos. Se declara aqui porque varias pruebas indexan estas columnas, y con los
+ * literales repartidos anadir la columna del `id` las rompia de una en una sin que ninguna
+ * dijera que el problema era el orden.
+ */
+const CATALOGO = { ID: 0, CATEGORIA: 1, PRECIO: 2, STOCK: 3, ACCION: 4 } as const;
+
 const subtotalText = (): string => screen.getByTestId('cart-subtotal').textContent ?? '';
 
 const clickAdd = (productName: string): void => {
@@ -578,17 +588,22 @@ describe('carga del catalogo (FC-R5.1, FC-R5.6)', () => {
     expect(within(catalogTable()).getByRole('rowheader', { name: CAMISETA })).toBeInTheDocument();
   });
 
-  it('pinta categoria, precio formateado y stock de cada producto', async () => {
+  it('pinta id, categoria, precio formateado y stock de cada producto', async () => {
     await renderReady();
 
-    // Categoria etiquetada CON tilde, precio via formatCents, stock tal cual.
+    // HU 1 enumera los cinco campos: id, nombre, precio unitario, categoria y stock. El
+    // nombre es el `rowheader` con el que `cellsOf` localiza la fila; los otros cuatro son
+    // las celdas de datos, y la igualdad estricta afirma tambien que no sobra ninguna.
+    // Categoria etiquetada CON tilde, precio via formatCents, stock e id tal cual.
     expect(cellsOf(catalogTable(), LAPTOP)).toStrictEqual([
+      LAPTOP_ID,
       'Tecnología',
       formatCents(129900), // $1,299.00
       '5',
       'Agregar',
     ]);
     expect(cellsOf(catalogTable(), SABANAS)).toStrictEqual([
+      SABANAS_ID,
       'Hogar',
       formatCents(5900), // $59.00
       '3',
@@ -793,7 +808,7 @@ describe('el tope del stock disponible en pantalla', () => {
     addTimes(SABANAS, 6);
 
     // Los tres clics que sobran no hacen nada: el boton ya esta deshabilitado.
-    expect(cellsOf(catalogTable(), SABANAS)[2]).toBe('3');
+    expect(cellsOf(catalogTable(), SABANAS)[CATALOGO.STOCK]).toBe('3');
     expect(cellsOf(cartTable(), SABANAS)[0]).toBe('3');
     // 5900 x 3 = 17700
     expect(subtotalText()).toBe(formatCents(17700)); // $177.00
@@ -832,7 +847,7 @@ describe('el tope del stock disponible en pantalla', () => {
     );
     await renderReady();
 
-    expect(cellsOf(catalogTable(), SABANAS)[2]).toBe('0');
+    expect(cellsOf(catalogTable(), SABANAS)[CATALOGO.STOCK]).toBe('0');
     expect(addButton(SABANAS)).toBeDisabled();
 
     clickAdd(SABANAS);
@@ -864,7 +879,7 @@ describe('la UI pinta el entero del selector sin reformatearlo (I6)', () => {
     addTimes(TECLADO, 2);
 
     // 4550 x 2 = 9100
-    expect(cellsOf(catalogTable(), TECLADO)[1]).toBe(formatCents(4550)); // $45.50
+    expect(cellsOf(catalogTable(), TECLADO)[CATALOGO.PRECIO]).toBe(formatCents(4550)); // $45.50
     expect(cellsOf(cartTable(), TECLADO)[1]).toBe(formatCents(9100)); // $91.00
   });
 });
@@ -1136,7 +1151,7 @@ describe('confirmar la compra (FK-R5.1, FK-R5.2, FK-R6.6)', () => {
     expect(confirmButton()).toBeDisabled();
     // La recarga del catalogo es lo que hace visible el stock ya decrementado (FK-R5.3).
     expect(fetchCatalogDouble).toHaveBeenCalledTimes(2);
-    expect(cellsOf(catalogTable(), LAPTOP)[2]).toBe('4');
+    expect(cellsOf(catalogTable(), LAPTOP)[CATALOGO.STOCK]).toBe('4');
   });
 
   it('el comprobante pinta los montos congelados de la orden, sin recalcular', async () => {
