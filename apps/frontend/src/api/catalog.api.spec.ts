@@ -1,7 +1,8 @@
 import { CATALOG_PRODUCTS } from '@core/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ApiClientError, fetchCatalog } from './catalog.api';
+import { fetchCatalog } from './catalog.api';
+import { ApiClientError } from './http';
 
 import type { ApiError } from '@core/shared';
 
@@ -105,6 +106,36 @@ describe('fetchCatalog: respuestas no satisfactorias (FC-R2.3)', () => {
     expect(error).toBeInstanceOf(ApiClientError);
     expect(error.name).toBe('ApiClientError');
     expect(error.message).toBe('No se pudo leer el catalogo.');
+  });
+
+  it('transporta el code y los details del cuerpo en el error tipado (FK-R1.3)', async () => {
+    // La UI distingue el fallo por su `code`, nunca leyendo el texto del mensaje.
+    const body: ApiError = {
+      error: {
+        code: 'PRODUCT_NOT_FOUND',
+        message: 'No existe el producto.',
+        details: { productId: 'PROD-999' },
+      },
+    };
+    fetchDouble.mockResolvedValue(jsonResponse(body, 404));
+
+    const error = await rejectionOf(fetchCatalog());
+
+    expect(error.code).toBe('PRODUCT_NOT_FOUND');
+    expect(error.details).toStrictEqual({ productId: 'PROD-999' });
+  });
+
+  it('deja code y details ausentes cuando el cuerpo no los trae en su forma', async () => {
+    // Un `code` fuera de la union no descarta un mensaje mostrable: se omite el codigo.
+    fetchDouble.mockResolvedValue(
+      jsonResponse({ error: { code: 'CODIGO_INVENTADO', message: 'Fallo raro.' } }, 500),
+    );
+
+    const error = await rejectionOf(fetchCatalog());
+
+    expect(error.message).toBe('Fallo raro.');
+    expect(error.code).toBeUndefined();
+    expect(error.details).toBeUndefined();
   });
 
   it('cae al mensaje generico cuando el cuerpo del error no es JSON', async () => {
