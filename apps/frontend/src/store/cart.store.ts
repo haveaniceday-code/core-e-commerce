@@ -35,6 +35,13 @@ export const useCartStore = create<CartState>()((...args) => ({
   ...createCheckoutSlice(...args),
 }));
 
+/**
+ * La regla del stock se re-exporta desde aqui porque este modulo es la cara publica del
+ * store: los componentes importan `useCartStore` y sus selectores de un solo sitio y no
+ * necesitan saber en que slice vive cada cosa.
+ */
+export { remainingStock } from './cart.slice';
+
 export type {
   CartLine,
   CartSlice,

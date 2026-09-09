@@ -225,3 +225,39 @@ paso.
     void main().catch((error: unknown) => { /* stderr + exitCode 1 */ });
   }
   ```
+
+#### [3] El carrito dejaba superar el stock disponible
+
+**Cómo apareció.** Probando la pantalla ya estilada: con `stock` 3 podía seguir pulsando `+`
+hasta 6, y con `stock` 0 el botón "Agregar" seguía respondiendo.
+
+**Lo que había escrito.** No era un descuido de la IA: era una decisión mía consolidada en
+`.kiro/`, D1 de `frontend-cart`, elevada a criterio EARS en R3.6.
+
+> "El carrito **no limita por stock**. Muestra el disponible pero deja superarlo: el rechazo
+> del backend es un paso necesario, y un tope en la UI lo haría indemostrable."
+
+**La instrucción que di.** Textual, tal cual la escribí:
+
+> Aunque el backend esta validando, en el frontend se deberia validar esto antes de enviar la
+> request al backend, cuando un producto está sin stock el usuario puede agregarlo al carrito,
+> tambien si hay por ejemplo 3 en stock y el usuario le clic en el boton + le permite agregar
+> mas de 3 al carrito, cambia este comportamiento deshabilitando el boton si el stock llega a
+> 0.
+
+**Por qué la invertí.** Dejar que la UI construya un carrito que ya se sabe rechazado es
+enviar una petición cuyo resultado conozco de antemano, y hacerle al usuario un viaje de red
+para decirle lo que la pantalla ya tenía delante. El argumento que sostenía D1 tampoco se
+pierde: el `409` sigue alcanzable con el catálogo obsoleto —agregar en una pestaña, comprar en
+otra, confirmar en la primera—, que además es el único caso que la validación de cliente **no**
+puede cubrir, porque el catálogo del navegador es una copia que envejece.
+
+**Cómo quedó.** `remainingStock(stock, enCarrito)` escrita una vez en `cart.slice.ts`, con tres
+consumidores: `add`, que no construye la línea inválida y entonces tampoco pide desglose; y los
+dos botones, que la leen para su `disabled`. La regla vive en el store y no solo en el control
+deshabilitado: el `disabled` es lo que el usuario ve, pero otro componente que llamara a `add`
+volvería a construir la línea. El backend no cambia y sigue siendo el que manda.
+
+**Lo que costó.** Invertir R3.6 y D1, y reescribir tres suites. La del `409` es la que enseña
+el cambio: ya no puede nacer de un carrito pasado de stock, así que ahora nace del catálogo
+obsoleto —pide 3, el backend responde que hay 1—, que es el escenario que sobrevive al tope.
