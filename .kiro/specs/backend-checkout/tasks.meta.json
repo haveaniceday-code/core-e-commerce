@@ -1,0 +1,350 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Crear `packages/shared/src/domain/order.contracts.ts` y exportarlo": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552277
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958567477
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958681489
+      }
+    ],
+    "2.1 Declarar el puerto y limpiar lo que subsume": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552310
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958570909
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958684871
+      }
+    ],
+    "2.2 Implementar `src/domain/stock.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552342
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958689103
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958834707
+      }
+    ],
+    "2.3 Escribir `src/domain/stock.spec.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552369
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958838611
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959076747
+      }
+    ],
+    "3.1 Crear `test/doubles/in-memory-purchase.port.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552415
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958841941
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959080284
+      }
+    ],
+    "4.1 Implementar `preview`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552442
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958845505
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959083975
+      }
+    ],
+    "4.2 Implementar `confirm`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552459
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959089836
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959445506
+      }
+    ],
+    "4.3 Escribir `src/application/checkout.service.spec.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552485
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959454465
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959875799
+      }
+    ],
+    "5.1 Escribir `src/http/checkout.dto.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552509
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959093155
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959450445
+      }
+    ],
+    "5.2 Implementar `checkout.controller.ts` y `checkout.module.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552531
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959458531
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959879583
+      }
+    ],
+    "5.3 Escribir `src/http/checkout.controller.spec.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552551
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959885985
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960325033
+      }
+    ],
+    "6. Checkpoint - Dominio, aplicación y HTTP verificados": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552575
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960953025
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788961031685
+      }
+    ],
+    "7.1 Implementar `src/infra/prisma/prisma-purchase.repository.ts` y cablear": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552597
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959889638
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960328582
+      }
+    ],
+    "8.1 Escribir `test/checkout.e2e-spec.ts`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552618
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960336482
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960693075
+      }
+    ],
+    "9.1 Actualizar `.kiro/steering/product-rules.md`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552642
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960719664
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960945831
+      }
+    ],
+    "9.2 Ampliar `docs/arquitectura.md`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552669
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960723129
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960949163
+      }
+    ],
+    "10. Checkpoint final - Umbral de cobertura y suites de la raíz": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958552709
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788961035154
+      },
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788961131644
+      }
+    ],
+    "1. Contratos compartidos en `@core/shared`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788958681524
+      }
+    ],
+    "2. Dominio: puerto, tokens y funciones puras de stock": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959076773
+      }
+    ],
+    "3. Doble de prueba del puerto": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959080310
+      }
+    ],
+    "4. Caso de uso: `CheckoutService`": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788959875825
+      }
+    ],
+    "5. Capa HTTP": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960325067
+      }
+    ],
+    "7. Adaptador Prisma y wiring": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960328616
+      }
+    ],
+    "8. Prueba end-to-end": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960693108
+      }
+    ],
+    "9. Documentación de la entrega": [
+      {
+        "executionId": "3b47325a-36a5-4022-b6db-6a113621d711",
+        "chatSessionId": "sess_219c68dd-4acb-42c4-93c3-8af96c1da95e",
+        "timestamp": 1788960949193
+      }
+    ]
+  }
+}

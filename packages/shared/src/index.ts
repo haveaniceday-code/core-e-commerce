@@ -17,6 +17,12 @@ export type {
 } from './domain/discount.contracts';
 export { ERROR_CODES } from './domain/errors';
 export type { ErrorCode, ApiError } from './domain/errors';
+export type {
+  CheckoutRequest,
+  OrderConfirmation,
+  OrderConfirmationItem,
+  StockShortage,
+} from './domain/order.contracts';
 
 // Seed canonico
 export { CATALOG_PRODUCTS, findProductById } from './seed/catalog.seed';

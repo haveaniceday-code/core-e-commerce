@@ -3,9 +3,11 @@
 Documento de decisiones de arquitectura del monorepo. Crece por entrega: cada spec añade la
 sección de lo que instaló, con el fundamento de la decisión y no solo su enunciado.
 
-Esta versión cubre `apps/backend` tal como lo dejó la spec `backend-persistence`: el arranque de
+Esta versión cubre `apps/backend` tal como lo dejó la spec `backend-persistence` —el arranque de
 NestJS, la persistencia Prisma sobre SQLite, el seed explícito del catálogo, los repositorios como
-puertos de dominio y el endpoint `GET /api/products`.
+puertos de dominio y el endpoint `GET /api/products`— más lo que añadió la spec `backend-checkout`:
+`POST /api/checkout/preview`, `POST /api/checkout`, las reglas puras de stock y el puerto de
+confirmación de compra.
 
 ---
 
@@ -17,7 +19,7 @@ El backend se organiza en cuatro capas con una única dirección de dependencia 
 HTTP  ──► http/          orquesta: recibe, delega, responde. Cero reglas.
             │
             ▼
-         application/    caso de uso: pide el catálogo al puerto.
+         application/    caso de uso: pide el catálogo, invoca el motor, confirma.
             │
             ▼            (token de inyección, no clase concreta)
          domain/         puertos, mapeo puro, errores tipados.
@@ -30,10 +32,10 @@ Rutas concretas:
 
 | capa | archivos |
 |------|----------|
-| `http` | `apps/backend/src/http/products.controller.ts`, `apps/backend/src/http/api-exception.filter.ts`, `apps/backend/src/http/products.module.ts` |
-| `application` | `apps/backend/src/application/catalog.service.ts` |
-| `domain` | `apps/backend/src/domain/tokens.ts`, `product.repository.ts`, `order.repository.ts`, `product-mapper.ts`, `product-order.ts`, `errors.ts` |
-| `infra` | `apps/backend/src/infra/prisma/prisma.service.ts`, `prisma.module.ts`, `prisma-product.repository.ts` |
+| `http` | `apps/backend/src/http/products.controller.ts`, `checkout.controller.ts`, `checkout.dto.ts`, `api-exception.filter.ts`, `products.module.ts`, `checkout.module.ts` |
+| `application` | `apps/backend/src/application/catalog.service.ts`, `checkout.service.ts` |
+| `domain` | `apps/backend/src/domain/tokens.ts`, `product.repository.ts`, `purchase.port.ts`, `order.repository.ts`, `stock.ts`, `product-mapper.ts`, `product-order.ts`, `errors.ts` |
+| `infra` | `apps/backend/src/infra/prisma/prisma.service.ts`, `prisma.module.ts`, `prisma-product.repository.ts`, `prisma-purchase.repository.ts` |
 | arranque | `apps/backend/src/main.ts` (bootstrap), `apps/backend/src/port.ts` (`resolvePort`), `apps/backend/src/app.module.ts` |
 
 La flecha que sostiene el diseño es la última, la que va hacia arriba: `application` depende de la
@@ -74,11 +76,11 @@ Las interfaces se declaran en la capa de dominio y las implementa infraestructur
   `findById(id)`. El orden ascendente por `id` es parte del contrato de la interfaz, no un detalle
   del `orderBy` de Prisma: si viviera solo en el adaptador, un doble de prueba podría devolver otro
   orden y el e2e pasaría afirmando algo que producción no garantiza.
-- `apps/backend/src/domain/order.repository.ts` — `OrderRepository` más `NewOrder`, `NewOrderLine`
-  y `PersistedOrder`. Declarado sin implementación concreta en esta entrega por decisión de alcance
-  (D1): el adaptador de órdenes llega con `POST /api/checkout`. Se escribe ahora porque fija la
-  forma de la orden persistida que el schema ya modela, y porque tener el puerto declarado es lo
-  que permite que el checkout llegue después sin tocar `application` ni `http`.
+- `apps/backend/src/domain/order.repository.ts` — hoy solo `NewOrder`, `NewOrderLine` y
+  `PersistedOrder`. La interfaz `OrderRepository` que daba nombre al archivo se declaró en
+  `backend-persistence` sin implementación, y `backend-checkout` la **eliminó**: quedó subsumida por
+  `PurchaseConfirmationPort` (ver la sección siguiente). Los tipos se conservan intactos, porque son
+  la forma de la orden que el schema ya modela y la que el puerto recibe y devuelve.
 - `apps/backend/src/infra/prisma/prisma-product.repository.ts` — la implementación sobre Prisma.
   Convierte el `null` de Prisma a `undefined` aquí y no más arriba, porque el dominio expresa
   ausencia con `undefined`, igual que `findProductById` de `@core/shared`.
@@ -90,6 +92,158 @@ que hace que `apps/backend/test/products.e2e-spec.ts` arranque el módulo de Nes
 `apps/backend/test/doubles/in-memory-product.repository.ts`, sin base de datos y sin modificar
 `CatalogService`. La prueba de que el desacoplamiento es real es que la suite completa corre sin un
 archivo `.db`.
+
+## Ports & Adapters: `PurchaseConfirmationPort` tiene una operación, no dos
+
+El puerto de confirmación de compra se declara en `apps/backend/src/domain/purchase.port.ts` con un
+único método:
+
+```ts
+confirm(order: NewOrder): Promise<PersistedOrder>;
+```
+
+Que sea **uno** y no dos es la decisión, y no una simplificación. El decremento de stock y la
+creación de la orden son una unidad atómica: o pasan las dos cosas o no pasa ninguna. Con la interfaz
+partida en `decrementStock` y `create`, el segundo método tendría que ejecutarse dentro de la misma
+transacción que el primero, y la única forma de conseguirlo es que reciba el cliente transaccional
+por parámetro. Eso pone un tipo de Prisma en la firma de una interfaz de dominio, que es exactamente
+la dependencia que el puerto existe para evitar. La atomicidad no es un detalle del adaptador que
+pueda quedar fuera del contrato: es la garantía que el contrato ofrece, así que tiene que caber en
+una sola llamada.
+
+De ahí que `OrderRepository` desapareciera junto con su token `ORDER_REPOSITORY`. No fue un
+renombrado: el puerto la subsume. Retirarla no costó nada porque nunca tuvo consumidor —se había
+declarado en `backend-persistence` anticipando el checkout—, y conservarla habría dejado dos maneras
+de escribir una orden, una de ellas incapaz de ser atómica. La diferencia con `ProductRepository` es
+de naturaleza, no de tamaño: un repositorio es una colección persistida y se nombra por su entidad;
+este puerto se nombra por el hecho de negocio que confirma, y su interfaz es la de un caso de uso
+porque lo que garantiza es una unidad de trabajo.
+
+El reparto de responsabilidades queda así:
+
+| pieza | archivo | qué decide |
+|-------|---------|------------|
+| puerto | `apps/backend/src/domain/purchase.port.ts` | nada: declara la garantía |
+| adaptador | `apps/backend/src/infra/prisma/prisma-purchase.repository.ts` | **cómo** se consigue la atomicidad |
+| binding | `apps/backend/src/http/checkout.module.ts` (`PURCHASE_PORT`) | qué implementación se usa |
+| caso de uso | `apps/backend/src/application/checkout.service.ts` | la secuencia de la compra |
+
+`CheckoutService` recibe el puerto por token y no conoce ni la transacción ni el motor de base. Es lo
+que permite que `apps/backend/test/doubles/in-memory-purchase.port.ts` lo sustituya y que toda la
+suite del checkout —unitaria y e2e— corra sin un archivo `.db`.
+
+## El compare-and-swap no depende del nivel de aislamiento
+
+Dentro de `$transaction`, cada línea se decrementa con una actualización **condicional**:
+
+```ts
+tx.product.updateMany({
+  where: { id: line.productId, stock: { gte: line.quantity } },
+  data: { stock: { decrement: line.quantity } },
+});
+```
+
+Dos propiedades sostienen la corrección, y ninguna es una garantía que haya que pedirle al motor:
+
+- **La condición y la escritura son la misma sentencia.** No hay ventana entre comprobar el stock y
+  restarlo porque no se comprueba por separado: si otra transacción se llevó las unidades, la fila
+  deja de satisfacer el `where` y `count` vale `0`.
+- **`decrement` es atómico.** Se traduce a `SET stock = stock - ?`, no a un leer-modificar-escribir
+  en el proceso Node.
+
+Por eso el nivel de aislamiento es irrelevante aquí. La anomalía clásica del inventario es la
+actualización perdida, y una actualización perdida necesita una lectura cuyo resultado se use para
+calcular la escritura: `SELECT stock`, decidir en el proceso, `UPDATE stock = 4`. Ese patrón sí
+depende de que el motor impida que otro escritor se cuele en medio, y por tanto del aislamiento. Aquí
+no hay lectura: la escritura se calcula sola y su precondición la evalúa el motor mientras tiene la
+fila tomada. El código sería igual de correcto sobre PostgreSQL con `READ COMMITTED`, que es lo
+importante: **no** está apoyado en la serialización de escritores de SQLite, solo la tolera.
+
+Cuando alguna actualización no afecta fila, `verifyStockDecrements` lanza
+`DiscountDomainError('INSUFFICIENT_STOCK', …)` desde dentro del callback, lo que aborta la
+transacción completa: los decrementos ya emitidos se revierten y la orden no llega a crearse. No
+queda estado intermedio que limpiar.
+
+Esa guarda vive en `apps/backend/src/domain/stock.ts` y no en el adaptador, por el mismo criterio que
+puso `product-mapper.ts` en el dominio. Es una función pura sobre `StockDecrementOutcome[]`, un tipo
+estructural que el adaptador rellena con los `count` que devuelve Prisma. Dentro del adaptador no
+podría probarse sin doblar el cliente transaccional, y quedaría fuera de la medición de cobertura.
+Fuera, se prueba con una tabla de casos y con el modo de fallo del doble en memoria, que devuelve
+`affectedRows: 0` en una línea y permite ejercitar una carrera sin base de datos. El adaptador queda
+reducido a emitir las sentencias y delegar el veredicto: no decide nada.
+
+### Por qué la validación previa sigue existiendo
+
+`CheckoutService.confirm` comprueba el stock antes de escribir, con `normalizeCart` y `findShortages`.
+Para la **corrección** es redundante: la guarda del compare-and-swap ya hace imposible vender más
+unidades de las que hay. Se mantiene porque las dos comprobaciones responden preguntas distintas.
+
+| | validación previa | guarda del decremento |
+|---|---|---|
+| dónde | `checkout.service.ts`, paso 4 | `stock.ts`, dentro de la transacción |
+| a quién sirve | al usuario | al sistema |
+| qué sabe | cuánto se pidió y cuánto había | que la fila ya no cumplía la condición |
+| detalles del `409` | `shortages`, con `requested` y `available` de **todas** las líneas deficitarias | `contendedProductIds` |
+
+La validación previa informa: reporta todas las líneas en déficit con sus cantidades, de modo que el
+carrito se corrija en un solo intento. La guarda protege: sabe que perdió la carrera, pero no cuánto
+stock quedaba —y releerlo daría un valor igual de obsoleto—, así que no puede prometer un `available`
+que ya no sería cierto. Por eso sus detalles son distintos, y por eso los dos `409` no son el mismo
+error con dos redacciones.
+
+Quedarse solo con la guarda convertiría todo carrito excedido en un mensaje opaco de carrera, y
+pagaría una transacción por cada rechazo que se podía conocer sin escribir. Quedarse solo con la
+validación reabriría la ventana entre comprobar y escribir. Y el orden en que están —validar y
+calcular primero, escribir después— es lo que hace que un checkout rechazado **no llegue a tocar la
+base por construcción**, no por rollback. El rollback cubriría el caso igualmente; que sea cierto sin
+necesidad de deshacer nada es lo que permite afirmarlo en una prueba unitaria sin base de datos.
+
+## Por qué `preview` y `checkout` no pueden divergir
+
+Los dos endpoints exponen el mismo desglose, y el riesgo evidente es que uno de ellos empiece a
+calcularlo distinto: un redondeo aplicado en otro punto, un umbral copiado, un total recompuesto. La
+respuesta no es una convención ni un test de regresión, sino que **no hay dos implementaciones**.
+
+- **Un solo motor.** `CheckoutService` guarda una instancia,
+  `new DiscountEngine(new DiscountStrategyFactory().create())`, y tanto `preview` como `confirm`
+  llaman a `engine.calculate`. No hay una segunda construcción del motor en el backend.
+- **Una sola forma de armar la entrada.** El helper `toCalculationInput` es compartido por los dos
+  métodos. Si cada uno compusiera su propio contexto, la divergencia estaría a una edición de
+  distancia.
+- **Un solo redondeo, y no vive aquí.** El servicio no redeclara tasas, umbrales, precedencia ni el
+  tope, y no ejecuta ninguna operación de redondeo sobre montos calculados: `MICRO` y `roundHalfUp`
+  son de `packages/shared`, que es dueño único de la política. La cascada exacta en micro-centavos y
+  el redondeo único final ocurren en el mismo código para ambos caminos.
+- **Los precios son los persistidos en los dos casos.** Ambos métodos leen el catálogo del
+  `ProductRepository`. La petición aporta únicamente líneas y cupón: `checkout.dto.ts` no declara
+  ningún campo de monto, y `forbidNonWhitelisted` rechaza los ajenos, así que no existe canal por el
+  que el cliente pueda influir en los importes.
+- **La confirmación embebe los totales, no los recalcula.** `toOrderConfirmation` recibe el
+  `CheckoutTotals` que produjo el motor y con el que se persistió la orden, y lo pasa tal cual. No
+  hay una segunda derivación que pueda diferir en un centavo.
+
+`checkout.service.spec.ts` afirma la igualdad campo por campo entre `preview` y `confirm` para el
+mismo carrito y cupón. Conviene ser preciso sobre qué hace ese test: documenta la propiedad y avisa
+si alguien introduce un camino paralelo, pero no es lo que la sostiene. Lo que la sostiene es que
+divergir exigiría editar `packages/shared`, y eso cambia los dos lados a la vez.
+
+## Una excepción medida: el adaptador de compra sí entra en cobertura
+
+`prisma-product.repository.ts` está excluido de la medición en `apps/backend/jest.config.ts` porque
+es una consulta y una delegación, sin ramas propias: medirlo solo añadiría ruido. El mismo criterio
+se anticipó para `prisma-purchase.repository.ts` una vez extraída la guarda del compare-and-swap al
+dominio, y **no se cumplió**. Queda una rama: `order.couponCode ?? null`.
+
+Es una frontera de representación y no una decisión de negocio —el dominio expresa "sin cupón" con la
+propiedad ausente y la columna lo expresa con `NULL`—, así que había un argumento para excluirlo
+igualmente. Se descartó: el criterio es sintáctico y se aplica tal cual, si el archivo tiene ramas se
+mide. El coste de la alternativa es peor que la asimetría, porque una lista de exclusiones que
+depende de juzgar si una rama "cuenta" deja de ser verificable y se convierte en una discusión caso
+por caso.
+
+El resultado es que los dos adaptadores Prisma se tratan distinto, y esa asimetría no es elegante. Se
+documenta en el propio `jest.config.ts`, junto a la exclusión, para que quien la lea entienda que es
+una consecuencia del criterio y no un olvido.
 
 ## La extensión `INTERNAL_ERROR` del contrato de error
 
@@ -154,9 +308,14 @@ simultáneas —dos checkouts compitiendo por el mismo stock— la segunda trans
 con un error de base bloqueada. No hay concurrencia de escritura seria y no la va a haber. Para
 este alcance es irrelevante, pero es una limitación real y no se disimula.
 
+Conviene separar esa limitación de la corrección del checkout, porque es fácil confundirlas. El
+decremento condicional descrito arriba no está apoyado en que SQLite serialice a los escritores: es
+correcto sobre un motor concurrente igual que sobre este. La serialización es un techo de
+rendimiento, no el mecanismo que evita la sobreventa.
+
 Lo que hace que el trade-off sea asumible es que la elección de motor no es una decisión
-estructural: el acceso a datos está detrás de `ProductRepository` y `OrderRepository`, declarados en
-`apps/backend/src/domain/`, y el único punto del backend que instancia `PrismaClient` es
+estructural: el acceso a datos está detrás de `ProductRepository` y `PurchaseConfirmationPort`,
+declarados en `apps/backend/src/domain/`, y el único punto del backend que instancia `PrismaClient` es
 `apps/backend/src/infra/prisma/prisma.service.ts`. Migrar a PostgreSQL toca el datasource del
 schema, la migración y el adaptador; no toca el dominio, ni el caso de uso, ni el controlador, ni un
 solo test unitario, porque ninguno de ellos sabe qué motor hay debajo. El coste de revertir esta

@@ -1,3 +1,13 @@
+/**
+ * Forma de la orden en el dominio: lo que `PurchaseConfirmationPort` recibe y
+ * devuelve. La interfaz `OrderRepository` que vivia aqui se elimino (BC-R6.5, D4):
+ * quedo subsumida por el puerto, porque su `create` no podia ejecutarse fuera de la
+ * transaccion del decremento sin filtrar el cliente transaccional a su firma. Los
+ * tipos se conservan intactos: son el contrato que el schema Prisma ya modela.
+ *
+ * `createdAt` es `Date` a proposito. Es el tipo del dominio; la conversion a
+ * ISO-8601 ocurre al mapear a `OrderConfirmation`, que es lo que cruza el cable.
+ */
 import type { ProductCategory } from '@core/shared';
 
 /** Linea de orden ya resuelta, con todos los montos en centavos enteros. */
@@ -21,16 +31,4 @@ export interface NewOrder {
 export interface PersistedOrder extends NewOrder {
   readonly id: string;
   readonly createdAt: Date;
-}
-
-/**
- * Interfaz declarada, sin implementacion concreta y sin doble de prueba en esta
- * entrega (D1 / BP-R4.2): no existe todavia un consumidor que la resuelva. Queda
- * escrita porque fija la forma de la orden persistida —montos en centavos enteros,
- * `capApplied` y `couponCode` opcional— que el schema Prisma ya modela, y porque el
- * puerto declarado en el dominio es lo que permite que el checkout llegue despues
- * sin tocar `application` ni `http`.
- */
-export interface OrderRepository {
-  create(order: NewOrder): Promise<PersistedOrder>;
 }
