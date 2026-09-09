@@ -82,18 +82,18 @@ const ShortageList = ({
  */
 const Receipt = ({ confirmation }: { readonly confirmation: OrderConfirmation }): JSX.Element => (
   <>
-    <p>
-      Orden: <strong data-testid="order-id">{confirmation.orderId}</strong>
+    <p className="dato">
+      <span>Orden</span> <strong data-testid="order-id">{confirmation.orderId}</strong>
     </p>
-    <p>
-      Fecha:{' '}
+    <p className="dato">
+      <span>Fecha</span>{' '}
       <time dateTime={confirmation.createdAt} data-testid="order-created-at">
         {confirmation.createdAt}
       </time>
     </p>
     {confirmation.couponCode !== undefined && (
-      <p>
-        Cupón: <strong data-testid="order-coupon">{confirmation.couponCode}</strong>
+      <p className="dato">
+        <span>Cupón</span> <strong data-testid="order-coupon">{confirmation.couponCode}</strong>
       </p>
     )}
 
@@ -102,9 +102,9 @@ const Receipt = ({ confirmation }: { readonly confirmation: OrderConfirmation })
         <tr>
           <th scope="col">Producto</th>
           <th scope="col">Categoría</th>
-          <th scope="col">Cantidad</th>
-          <th scope="col">Precio unitario</th>
-          <th scope="col">Total</th>
+          <th scope="col" className="num">Cantidad</th>
+          <th scope="col" className="num">Precio unitario</th>
+          <th scope="col" className="num">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -113,10 +113,10 @@ const Receipt = ({ confirmation }: { readonly confirmation: OrderConfirmation })
             <th scope="row">{item.name}</th>
             {/* La tilde vive solo en la etiqueta, nunca en el literal. */}
             <td>{CATEGORY_LABEL[item.category]}</td>
-            <td>{item.quantity}</td>
+            <td className="num">{item.quantity}</td>
             {/* Montos congelados en la orden: se formatean, no se multiplican. */}
-            <td>{formatCents(item.unitPriceCents)}</td>
-            <td>{formatCents(item.lineTotalCents)}</td>
+            <td className="num">{formatCents(item.unitPriceCents)}</td>
+            <td className="num">{formatCents(item.lineTotalCents)}</td>
           </tr>
         ))}
       </tbody>
@@ -127,20 +127,20 @@ const Receipt = ({ confirmation }: { readonly confirmation: OrderConfirmation })
       backend calculo y persistio. Tres enteros que se formatean y nada mas: sin sumar,
       sin restar y sin volver a redondear (FK-R5.2).
     */}
-    <p>
-      Subtotal:{' '}
+    <p className="total">
+      <span>Subtotal</span>
       <strong data-testid="order-subtotal">
         {formatCents(confirmation.totals.originalSubtotalCents)}
       </strong>
     </p>
-    <p>
-      Ahorro total:{' '}
+    <p className="total">
+      <span>Ahorro total</span>
       <strong data-testid="order-savings">
         {formatCents(confirmation.totals.totalSavingsCents)}
       </strong>
     </p>
-    <p>
-      Total pagado:{' '}
+    <p className="total total--destacado">
+      <span>Total pagado</span>
       <strong data-testid="order-total">
         {formatCents(confirmation.totals.finalTotalCents)}
       </strong>
@@ -173,6 +173,7 @@ export const OrderConfirmationPanel = (): JSX.Element => {
 
       <button
         type="button"
+        className="boton--primario"
         disabled={isEmpty || isSending}
         onClick={() => {
           confirmPurchase();
@@ -189,7 +190,7 @@ export const OrderConfirmationPanel = (): JSX.Element => {
         no las trae. Ni uno ni otro toca el carrito (FK-R5.4, FK-R5.5).
       */}
       {purchaseStatus === 'error' && (
-        <div data-testid="purchase-error">
+        <div className="aviso-error" data-testid="purchase-error">
           <p role="alert">{purchaseError}</p>
           {shortages.length > 0 && <ShortageList shortages={shortages} nameOf={nameOf} />}
         </div>

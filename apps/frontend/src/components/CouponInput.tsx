@@ -36,33 +36,38 @@ export const CouponInput = (): JSX.Element => {
 
       {/*
         `<label htmlFor>` en lugar de `aria-label` porque aqui el texto tambien es la
-        instruccion visible del campo, y un `placeholder` no es un nombre accesible.
+        instruccion visible del campo, y un `placeholder` no es un nombre accesible: el
+        que lleva el campo es un ejemplo del formato, no su nombre.
       */}
-      <label htmlFor="cupon-codigo">Código de cupón</label>
-      <input
-        id="cupon-codigo"
-        name="cupon-codigo"
-        type="text"
-        autoComplete="off"
-        value={couponDraft}
-        onChange={(event) => {
-          setCouponDraft(event.target.value);
-        }}
-      />
+      <div className="cupon__campo">
+        <label htmlFor="cupon-codigo">Código de cupón</label>
+        <input
+          id="cupon-codigo"
+          name="cupon-codigo"
+          type="text"
+          autoComplete="off"
+          placeholder="WELCOME2026"
+          value={couponDraft}
+          onChange={(event) => {
+            setCouponDraft(event.target.value);
+          }}
+        />
 
-      {/*
-        Sin `disabled` cuando el campo esta vacio: aplicar en blanco es la via para
-        **retirar** un cupon ya aplicado, y el store resuelve el borrador vacio a "sin
-        cupon". Deshabilitarlo dejaria al usuario sin forma de deshacer.
-      */}
-      <button
-        type="button"
-        onClick={() => {
-          applyCoupon();
-        }}
-      >
-        Aplicar
-      </button>
+        {/*
+          Sin `disabled` cuando el campo esta vacio: aplicar en blanco es la via para
+          **retirar** un cupon ya aplicado, y el store resuelve el borrador vacio a "sin
+          cupon". Deshabilitarlo dejaria al usuario sin forma de deshacer.
+        */}
+        <button
+          type="button"
+          className="boton--primario"
+          onClick={() => {
+            applyCoupon();
+          }}
+        >
+          Aplicar
+        </button>
+      </div>
     </section>
   );
 };

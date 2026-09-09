@@ -22,7 +22,8 @@ import { useCartStore } from '../store/cart.store';
  *    dejaria la condicion activa y la senal oculta.
  *
  * `role="alert"` para que un lector de pantalla la anuncie al aparecer, y `<strong>` para
- * que sea visualmente distintiva sin depender de hojas de estilo que esta app no tiene.
+ * que siga siendo distintiva aunque la hoja de estilos no cargue: la clase `alerta-tope`
+ * le da el color de logro —no el de error— pero el enfasis no depende de ella.
  *
  * Se suscribe solo a `totals`, que cambia de identidad unicamente cuando el store hace
  * `set`: teclear el cupon o recargar el catalogo no vuelve a renderizar la alerta.
@@ -44,7 +45,7 @@ export const CapAlert = (): JSX.Element | null => {
   }
 
   return (
-    <p role="alert" data-testid="cap-alert">
+    <p role="alert" className="alerta-tope" data-testid="cap-alert">
       <strong>{CAP_ALERT_TEXT}</strong>
     </p>
   );
