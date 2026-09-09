@@ -320,7 +320,15 @@ const CATALOG_AFTER_PURCHASE: readonly Product[] = CATALOG_PRODUCTS.map((product
   product.id === LAPTOP_ID ? { ...product, stock: product.stock - 1 } : product,
 );
 
-const SHORTAGE: StockShortage = { productId: SABANAS_ID, requested: 5, available: 3 };
+/**
+ * Linea deficitaria del `409`. Pide `3` —el maximo que la UI deja construir con el
+ * catalogo cargado— y el backend responde que solo hay `1`.
+ *
+ * Ese desfase es el caso que la validacion del cliente **no** puede cubrir y por el que el
+ * backend sigue siendo el que manda: el catalogo del navegador es una copia que envejece, y
+ * entre la carga y la compra otra sesion pudo llevarse las unidades.
+ */
+const SHORTAGE: StockShortage = { productId: SABANAS_ID, requested: 3, available: 1 };
 
 /** Linea deficitaria de un producto que el catalogo ya no conoce: la UI cae al id. */
 const UNKNOWN_SHORTAGE: StockShortage = {
@@ -376,6 +384,15 @@ const clickDecrease = (productName: string): void => {
 const clickRemove = (productName: string): void => {
   fireEvent.click(screen.getByRole('button', { name: `Quitar ${productName} del carrito` }));
 };
+
+const addButton = (productName: string): HTMLElement =>
+  screen.getByRole('button', { name: `Agregar ${productName} al carrito` });
+
+const increaseButton = (productName: string): HTMLElement =>
+  screen.getByRole('button', { name: `Aumentar cantidad de ${productName}` });
+
+const decreaseButton = (productName: string): HTMLElement =>
+  screen.getByRole('button', { name: `Disminuir cantidad de ${productName}` });
 
 const addTimes = (productName: string, times: number): void => {
   for (let i = 0; i < times; i += 1) {
@@ -769,18 +786,58 @@ describe('disminuir y quitar (FC-R5.3)', () => {
   });
 });
 
-describe('superar el stock disponible (FC-R3.6, D1)', () => {
-  it('agregar 6 veces un producto con stock 3 se refleja en pantalla sin error', async () => {
+describe('el tope del stock disponible en pantalla', () => {
+  it('agregar 6 veces un producto con stock 3 se detiene en 3 y sin error', async () => {
     await renderReady();
 
     addTimes(SABANAS, 6);
 
-    // El boton no se deshabilita y no aparece alerta: el rechazo es del backend.
+    // Los tres clics que sobran no hacen nada: el boton ya esta deshabilitado.
     expect(cellsOf(catalogTable(), SABANAS)[2]).toBe('3');
-    expect(cellsOf(cartTable(), SABANAS)[0]).toBe('6');
-    // 5900 x 6 = 35400
-    expect(subtotalText()).toBe(formatCents(35400)); // $354.00
+    expect(cellsOf(cartTable(), SABANAS)[0]).toBe('3');
+    // 5900 x 3 = 17700
+    expect(subtotalText()).toBe(formatCents(17700)); // $177.00
+    // Llegar al tope no es un fallo y no se anuncia como tal.
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('deshabilita "Agregar" y "+" al alcanzar el stock, y los reactiva al bajar', async () => {
+    await renderReady();
+
+    addTimes(SABANAS, 2);
+
+    // Con 2 de 3 todavia queda una unidad: ambos controles siguen vivos.
+    expect(addButton(SABANAS)).toBeEnabled();
+    expect(increaseButton(SABANAS)).toBeEnabled();
+
+    clickAdd(SABANAS);
+
+    expect(addButton(SABANAS)).toBeDisabled();
+    expect(increaseButton(SABANAS)).toBeDisabled();
+    // Reducir siempre es valido, tambien en el tope.
+    expect(decreaseButton(SABANAS)).toBeEnabled();
+
+    clickDecrease(SABANAS);
+
+    expect(addButton(SABANAS)).toBeEnabled();
+    expect(increaseButton(SABANAS)).toBeEnabled();
+  });
+
+  it('el catalogo con stock 0 no deja agregar el producto', async () => {
+    // Stock agotado por compras previas: el catalogo lo pinta en 0 y el boton no responde.
+    fetchCatalogDouble.mockResolvedValue(
+      CATALOG_PRODUCTS.map((product) =>
+        product.id === SABANAS_ID ? { ...product, stock: 0 } : product,
+      ),
+    );
+    await renderReady();
+
+    expect(cellsOf(catalogTable(), SABANAS)[2]).toBe('0');
+    expect(addButton(SABANAS)).toBeDisabled();
+
+    clickAdd(SABANAS);
+
+    expect(screen.queryByRole('table', { name: 'Carrito' })).not.toBeInTheDocument();
   });
 });
 
@@ -1117,7 +1174,7 @@ describe('la compra rechazada conserva el carrito (FK-R5.4, FK-R5.5, FK-R6.6, I5
   it('el 409 de stock muestra las lineas deficitarias y el carrito sigue ahi', async () => {
     requestConfirmationDouble.mockRejectedValue(stockRejection());
     await renderReady();
-    addTimes(SABANAS, 5);
+    addTimes(SABANAS, 3);
     await settledPreview();
 
     clickConfirm();
@@ -1128,7 +1185,7 @@ describe('la compra rechazada conserva el carrito (FK-R5.4, FK-R5.5, FK-R6.6, I5
     ).toBeInTheDocument();
     expect(screen.getByText(SHORTAGES_TITLE)).toBeInTheDocument();
     expect(screen.getByTestId(`shortage-${SABANAS_ID}`)).toHaveTextContent(
-      'Juego de Sábanas: solicitaste 5, disponible 3',
+      'Juego de Sábanas: solicitaste 3, disponible 1',
     );
     // Un producto que el catalogo ya no conoce cae a su identificador, en lugar de
     // ocultarle al usuario que esa linea fue la que sobro.
@@ -1136,8 +1193,8 @@ describe('la compra rechazada conserva el carrito (FK-R5.4, FK-R5.5, FK-R6.6, I5
       'PROD-999: solicitaste 2, disponible 0',
     );
     // Carrito intacto para corregir y reintentar, sin comprobante y sin recargar catalogo.
-    expect(cellsOf(cartTable(), SABANAS)[0]).toBe('5');
-    expect(subtotalText()).toBe(formatCents(29_500)); // 5900 x 5 = $295.00
+    expect(cellsOf(cartTable(), SABANAS)[0]).toBe('3');
+    expect(subtotalText()).toBe(formatCents(17_700)); // 5900 x 3 = $177.00
     expect(screen.getByText(NO_PURCHASE)).toBeInTheDocument();
     expect(fetchCatalogDouble).toHaveBeenCalledTimes(1);
   });
