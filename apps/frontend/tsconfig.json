@@ -1,0 +1,22 @@
+{
+  // Hereda `strict`, `noUncheckedIndexedAccess` y `exactOptionalPropertyTypes` de la base.
+  // Sobrescribe SOLO lo que el navegador exige: modulos ESM, resolucion de bundler, `lib`
+  // con DOM y la transformacion automatica de JSX. No emite: el bundle lo produce Vite.
+  //
+  // `paths` espeja el alias de `vite.config.ts` (FC-R1.3 / D3): tsc resuelve `@core/shared`
+  // a las FUENTES del paquete, no a `dist/`. Asi el typecheck del frontend no depende de un
+  // build previo de shared y el compilador ve exactamente los mismos tipos que el bundler.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@core/shared": ["../../packages/shared/src/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
+}

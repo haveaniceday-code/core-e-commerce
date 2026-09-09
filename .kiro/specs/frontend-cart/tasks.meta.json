@@ -1,0 +1,186 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Crear la configuración base": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046389
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962052814
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962319385
+      }
+    ],
+    "1.2 Escribir `vite.config.ts` con alias, proxy y Vitest": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046412
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962324009
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962485759
+      }
+    ],
+    "2.1 Implementar `src/api/catalog.api.ts`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046439
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962324879
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962489129
+      }
+    ],
+    "2.2 Escribir `src/api/catalog.api.spec.ts`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046459
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962492830
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962644069
+      }
+    ],
+    "3.1 Implementar `src/store/cart.store.ts`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046481
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962493657
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962647303
+      }
+    ],
+    "3.2 Escribir `src/store/cart.store.spec.ts`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046527
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962650908
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962981208
+      }
+    ],
+    "4.1 Implementar `src/App.tsx`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046548
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962651720
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962984631
+      }
+    ],
+    "4.2 Escribir `src/App.spec.tsx`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046571
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962988926
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788963305945
+      }
+    ],
+    "5. Checkpoint final - Umbral de cobertura y scripts de la raíz": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962046588
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788963309908
+      },
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788963704147
+      }
+    ],
+    "1. Andamiaje del workspace `apps/frontend`": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962485789
+      }
+    ],
+    "2. Cliente de la API": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962644106
+      }
+    ],
+    "3. Estado del carrito": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788962981240
+      }
+    ],
+    "4. Pantalla": [
+      {
+        "executionId": "44ed1a96-4056-413d-9f20-f33c9592be43",
+        "chatSessionId": "sess_42bb8665-48c8-41fb-bb6c-d0518fee94e4",
+        "timestamp": 1788963305981
+      }
+    ]
+  }
+}
