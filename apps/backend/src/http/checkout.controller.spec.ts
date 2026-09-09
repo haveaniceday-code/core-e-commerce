@@ -105,6 +105,7 @@ const TOTALS: CheckoutTotals = {
   capCents: 45465,
   capApplied: false,
   totalSavingsCents: 18836,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 1450,
   finalTotalCents: 111064,
 };

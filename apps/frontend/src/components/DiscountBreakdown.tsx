@@ -1,4 +1,4 @@
-import { formatCents } from '@core/shared';
+import { CAP_BPS, formatCents } from '@core/shared';
 
 import { useCartStore } from '../store/cart.store';
 
@@ -26,6 +26,18 @@ import type { CheckoutTotals } from '@core/shared';
 /** Textos de pantalla, fijados aqui porque son contrato de UI y no detalle interno. */
 const NO_BREAKDOWN = 'Agrega productos al carrito para ver el desglose de descuentos.';
 const RECALCULATING = 'Recalculando el desglose…';
+
+/**
+ * Etiqueta de la fila de ajuste. No se compone con el porcentaje —seria una segunda
+ * redaccion del mismo texto—, y por eso la tasa va en su propia columna.
+ */
+const CAP_ADJUSTMENT_LABEL = 'Ajuste por límite de descuento';
+
+/**
+ * Tope en puntos basicos, importado de `@core/shared` y no escrito como '35%' en el JSX:
+ * el limite tiene un solo dueno, y es el mismo entero con el que el motor trunca.
+ */
+const CAP_RATE_BPS = CAP_BPS;
 
 /**
  * Puntos basicos enteros a porcentaje legible: `1000` -> `10%`, `2732` -> `27.32%`.
@@ -63,6 +75,13 @@ const Breakdown = ({ totals }: { readonly totals: CheckoutTotals }): JSX.Element
         </tr>
       </thead>
       <tbody>
+        {/*
+          Las tres lineas de la cascada suman `rawDiscountCents`, que con el tope activo es
+          MAS que el ahorro reportado. Sin la fila de ajuste el desglose no cuadra a la
+          vista: el usuario suma las tres y le sale otra cifra que la del pie, sin nada en
+          pantalla que explique la diferencia. Con ella, las cuatro filas suman
+          exactamente `totalSavingsCents` (FK-R3.3).
+        */}
         {totals.lines.map((line) => (
           <tr key={line.name} data-testid={`breakdown-line-${line.name}`}>
             {/* El texto llega listo del backend; la UI no lo compone (FK-R3.1). */}
@@ -80,6 +99,26 @@ const Breakdown = ({ totals }: { readonly totals: CheckoutTotals }): JSX.Element
             <td className="num">{formatCents(line.discountCents)}</td>
           </tr>
         ))}
+
+        {/*
+          Se pinta solo con el tope activo, y la condicion es `capApplied`, igual que en
+          `CapAlert`: un descuento de exactamente el 35% no fue truncado y no lleva ajuste.
+          El monto llega restado del backend en `capAdjustmentCents`; aqui solo se le antepone
+          el signo, que es presentacion y no aritmetica (FK-R2.7).
+
+          La tasa es la del tope, no la de una regla: es el 35% que actua como limite, y
+          `CAP_RATE_BPS` lo declara una vez en lugar de escribir '35%' en el JSX.
+        */}
+        {totals.capApplied && (
+          <tr className="ajuste-tope" data-testid="breakdown-cap-adjustment">
+            <th scope="row">{CAP_ADJUSTMENT_LABEL}</th>
+            <td>
+              <span className="estado estado--aplicado">Aplicado</span>
+            </td>
+            <td className="num">{formatBps(CAP_RATE_BPS)}</td>
+            <td className="num">−{formatCents(totals.capAdjustmentCents)}</td>
+          </tr>
+        )}
       </tbody>
     </table>
 

@@ -169,6 +169,7 @@ const TOTALS: CheckoutTotals = {
   capCents: 45_465,
   capApplied: false,
   totalSavingsCents: 35_495,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 2_732,
   finalTotalCents: 94_405,
 };
@@ -201,6 +202,7 @@ const TOTALS_WITHOUT_COUPON: CheckoutTotals = {
   capCents: 45_465,
   capApplied: false,
   totalSavingsCents: 18_836,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 1_450,
   finalTotalCents: 111_064,
 };
@@ -232,6 +234,7 @@ const TOTALS_CAPPED: CheckoutTotals = {
   capCents: 45_465,
   capApplied: true,
   totalSavingsCents: 45_465,
+  capAdjustmentCents: 28_903,
   effectiveDiscountBps: 3_500,
   finalTotalCents: 84_435,
 };
@@ -282,6 +285,7 @@ const TOTALS_EXACTLY_AT_CAP: CheckoutTotals = {
   capCents: 1_393,
   capApplied: false,
   totalSavingsCents: 1_393,
+  capAdjustmentCents: 0,
   effectiveDiscountBps: 3_500,
   finalTotalCents: 2_587,
 };
@@ -1049,6 +1053,42 @@ describe('Alerta_Tope en sus dos direcciones (FK-R4.1 - FK-R4.4, FK-R6.5, I1, I2
     // El ahorro que se muestra es el ya topado, y las lineas siguen sumando el crudo.
     expect(textOf('breakdown-savings')).toBe(formatCents(45_465));
     expect(breakdownCells('COUPON')).toStrictEqual(['Aplicado', '50%', formatCents(55_532)]);
+  });
+
+  it('la fila de ajuste hace que el desglose cuadre con el ahorro reportado', async () => {
+    requestPreviewDouble.mockResolvedValue(TOTALS_CAPPED);
+    await renderReady();
+    await addAndSettle(LAPTOP);
+
+    await applyAndSettle('DEMOCAP50');
+
+    const ajuste = within(screen.getByTestId('breakdown-cap-adjustment'))
+      .getAllByRole('cell')
+      .map((cell) => cell.textContent ?? '');
+
+    // Tasa del tope, no la de una regla, y el monto con signo: 74368 - 45465 = 28903.
+    expect(ajuste).toStrictEqual(['Aplicado', '35%', `−${formatCents(28_903)}`]);
+    expect(within(screen.getByTestId('breakdown-cap-adjustment')).getByRole('rowheader'))
+      .toHaveTextContent('Ajuste por límite de descuento');
+
+    // La razon de ser de la fila: las tres lineas menos el ajuste dan exactamente el
+    // ahorro del pie, asi que lo que el usuario suma en pantalla cuadra (12990 + 5846 +
+    // 55532 - 28903 = 45465).
+    expect(textOf('breakdown-savings')).toBe(formatCents(45_465));
+  });
+
+  it('la fila de ajuste no existe sin truncamiento, ni con el 35% clavado', async () => {
+    await renderReady();
+    await addAndSettle(LAPTOP);
+
+    // capApplied false con un ahorro alto: no hay nada que ajustar.
+    expect(screen.queryByTestId('breakdown-cap-adjustment')).not.toBeInTheDocument();
+
+    requestPreviewDouble.mockResolvedValue(TOTALS_EXACTLY_AT_CAP);
+    await applyAndSettle('WELCOME2026');
+
+    // El 35% exacto tampoco fue truncado: misma condicion que la alerta (FK-R4.1).
+    expect(screen.queryByTestId('breakdown-cap-adjustment')).not.toBeInTheDocument();
   });
 
   it('no aparece con capApplied false aunque el ahorro sea alto', async () => {

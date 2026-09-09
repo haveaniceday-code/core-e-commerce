@@ -93,6 +93,25 @@ describe('el tope se activa por exceso estricto (DE-R6.4)', () => {
     expect(suma - totals.totalSavingsCents).toBeGreaterThan(0);
   });
 
+  it('capAdjustmentCents es exactamente lo truncado y cierra el desglose', () => {
+    const totals = engineWithRate(5000).calculate({ items: ITEMS, catalog: CATALOG });
+    const suma = totals.lines.reduce((a, l) => a + l.discountCents, 0);
+
+    expect(totals.capAdjustmentCents).toBe(totals.rawDiscountCents - totals.totalSavingsCents);
+    expect(totals.capAdjustmentCents).toBe(1_500); // 5000 crudo - 3500 de tope
+    // La propiedad que la UI necesita: las lineas MENOS el ajuste dan el ahorro
+    // reportado, de modo que el desglose cuadre en pantalla sin restar alli.
+    expect(suma - totals.capAdjustmentCents).toBe(totals.totalSavingsCents);
+  });
+
+  it('sin truncamiento el ajuste es 0, tambien con el 35% clavado', () => {
+    for (const bps of [3499, 3500]) {
+      const totals = engineWithRate(bps).calculate({ items: ITEMS, catalog: CATALOG });
+      expect(totals.capApplied).toBe(false);
+      expect(totals.capAdjustmentCents).toBe(0);
+    }
+  });
+
   it('el motor recorre por indice, no por order (DE-R2.3)', () => {
     const engine = new DiscountEngine([
       new StubDiscount('COUPON', 3, 1000),
