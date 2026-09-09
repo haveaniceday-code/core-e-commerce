@@ -8,6 +8,13 @@ export const ERROR_CODES = [
   'INSUFFICIENT_STOCK',
   'PRODUCT_NOT_FOUND',
   'INVALID_CART',
+  // Extension de infraestructura ajena al enunciado (BP-R5.7), en la misma linea
+  // en que DEMOCAP50 es extension de demo: ninguno de los tres codigos canonicos
+  // describe un fallo interno del servidor. Emitir INVALID_CART en un 500 seria
+  // mentirle al cliente y al log; silenciarlo con una assertion esta prohibido.
+  // Se mapea a 500 en el filtro de excepciones del backend, que mantiene la
+  // union exhaustiva en su Record<ErrorCode, number>.
+  'INTERNAL_ERROR',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];

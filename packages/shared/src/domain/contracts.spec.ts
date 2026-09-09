@@ -33,10 +33,15 @@ describe('uniones cerradas derivadas de as const (MF-R2.3)', () => {
     expect(COUPON_STATUSES).toEqual(['active', 'expired']);
   });
 
-  it('ERROR_CODES declara los tres codigos del contrato', () => {
+  it('ERROR_CODES declara los cuatro codigos del contrato, con INTERNAL_ERROR al final', () => {
+    // La union es la unica fuente de verdad: ERROR_CODES se afirma completo y en
+    // orden. INTERNAL_ERROR va ultimo porque es extension de infraestructura
+    // (BP-R5.7), posterior a los tres codigos canonicos del enunciado.
     expect(ERROR_CODES).toEqual([
-      'INSUFFICIENT_STOCK', 'PRODUCT_NOT_FOUND', 'INVALID_CART',
+      'INSUFFICIENT_STOCK', 'PRODUCT_NOT_FOUND', 'INVALID_CART', 'INTERNAL_ERROR',
     ]);
+    expect(ERROR_CODES).toHaveLength(4);
+    expect(ERROR_CODES[ERROR_CODES.length - 1]).toBe('INTERNAL_ERROR');
   });
 });
 
